@@ -28,7 +28,7 @@ function ThemeSwitch() {
   );
 }
 
-/** Thin progress bar while data loads, plus a note when the free-tier server is waking up. */
+/** A note when the free-tier server is slow to answer because it is waking up. */
 function NetBar() {
   const { t } = useI18n();
   const [st, setSt] = useState({ busy: false, slow: false });
@@ -45,7 +45,6 @@ function NetBar() {
   }, [st.busy]);
   return (
     <>
-      <div className={`netbar ${show ? "on" : ""}`} aria-hidden="true"><i /></div>
       {show && st.slow && <div className="netnote" role="status"><span className="spinner" aria-hidden="true" />{t("net.waking")}</div>}
     </>
   );

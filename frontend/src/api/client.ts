@@ -71,9 +71,12 @@ export function invalidate(prefix = "") {
   persist();
 }
 
+// Background checks (status light, job progress) don't count as "the page is loading".
+const isBackground = (path: string) => path === "/api/health" || /^\/api\/lens\/jobs\//.test(path);
+
 async function load<T>(path: string, init?: RequestInit): Promise<Envelope<T>> {
-  if (inflight++ === 0) oldest = Date.now();
-  emit();
+  const track = !isBackground(path);
+  if (track) { if (inflight++ === 0) oldest = Date.now(); emit(); }
   try {
     const r = await fetchWithWake(`${API_BASE}${path}`, init);
     if (!r.ok) {
@@ -83,8 +86,7 @@ async function load<T>(path: string, init?: RequestInit): Promise<Envelope<T>> {
     }
     return await r.json();
   } finally {
-    inflight--;
-    emit();
+    if (track) { inflight--; emit(); }
   }
 }
 
