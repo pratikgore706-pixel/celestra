@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Panel, PageScene } from "../components/Panel";
 import Scene from "../components/Scene";
+import BadgeIcon from "../components/BadgeIcon";
 import MoonGlyph from "../components/MoonGlyph";
 import MonLogo from "../components/MonLogo";
 import { GLYPH } from "../components/markers";
@@ -11,10 +12,9 @@ import { useI18n } from "../i18n/I18n";
 import { GUIDE } from "../i18n/guide";
 
 const SECTIONS = [
-  ["start", "道"], ["bar", "帯"], ["dojo", "道場"], ["watch", "望楼"], ["scroll", "天巻"],
-  ["lens", "霊眼"], ["honor", "誉"], ["data", "源"], ["tips", "心得"], ["faq", "問"],
+  "start", "bar", "dojo", "watch", "scroll", "lens", "honor", "data", "tips", "faq",
 ] as const;
-type SectionId = (typeof SECTIONS)[number][0];
+type SectionId = (typeof SECTIONS)[number];
 
 const PHASES: [number, string][] = [
   [0, "New Moon"], [45, "Waxing Crescent"], [90, "First Quarter"], [135, "Waxing Gibbous"],
@@ -72,19 +72,19 @@ export default function Guide() {
     start: G.quick.title, bar: G.bar.title, dojo: t("nav.dojo"), watch: t("nav.watchtower"), scroll: t("nav.scroll"),
     lens: t("nav.lens"), honor: t("honor.title"), data: G.data.title, tips: G.tips.title, faq: G.faq.title,
   };
-  const openLabel = (name: string) => (lang === "en" ? `${G.open} ${name}` : lang === "ja" ? `${name}を${G.open}` : `${name} ${G.open}`);
+  const openLabel = (name: string) => (lang === "en" ? `${G.open} ${name}` : `${name} ${G.open}`);
   const go = (id: SectionId) => refs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
   const sec = (id: SectionId) => ({ id: `g-${id}`, ref: (el: HTMLElement | null) => { refs.current[id] = el; } });
 
   return (
     <>
-      <PageScene kanji="指南" title={G.title} sub={G.sub}><Scene variant="guide" moonX={1260} /></PageScene>
+      <PageScene title={G.title} sub={G.sub}><Scene variant="guide" moonX={1260} /></PageScene>
       <div className="page guide">
         <nav className="g-index" aria-label={G.index}>
           <div className="eyebrow">{G.index}</div>
-          {SECTIONS.map(([id, kj]) => (
+          {SECTIONS.map((id, i) => (
             <button key={id} type="button" aria-current={active === id ? "true" : undefined} onClick={() => go(id)}>
-              <span className="g-kj" aria-hidden="true">{kj}</span>{label[id]}
+              <span className="g-kj" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{label[id]}
             </button>
           ))}
         </nav>
@@ -92,7 +92,7 @@ export default function Guide() {
         <div className="g-body">
           {/* ---------------- Quick start ---------------- */}
           <section {...sec("start")} className="g-sec">
-            <Panel kj="道" title={G.quick.title}>
+            <Panel title={G.quick.title}>
               <p className="g-intro">{G.quick.intro}</p>
               <ol className="g-quick">
                 {G.quick.steps.map((s, i) => (
@@ -109,7 +109,7 @@ export default function Guide() {
 
           {/* ---------------- Top bar ---------------- */}
           <section {...sec("bar")} className="g-sec">
-            <Panel kj="帯" title={G.bar.title}>
+            <Panel title={G.bar.title}>
               <p className="g-intro">{G.bar.intro}</p>
               <div className="g-bar" aria-hidden="true">
                 <span className="g-bar-brand"><MonLogo />Celestra</span>
@@ -117,7 +117,7 @@ export default function Guide() {
                 <span className="g-bar-right">
                   <span className="g-api"><i />API<em className="pin">2</em></span>
                   <span className="g-seg"><i className="on">{t("theme.yoru.s")}</i><i>{t("theme.akatsuki.s")}</i><em className="pin">3</em></span>
-                  <span className="g-seg"><i className="on">EN</i><i>हि</i><i>ਪੰ</i><i>日</i><em className="pin">4</em></span>
+                  <span className="g-seg"><i className="on">EN</i><i>हि</i><i>ਪੰ</i><em className="pin">4</em></span>
                 </span>
                 <span className="g-bar-banner"><i>{t("omamori")}</i>{t("banner.moonup").replace("{t}", "11:01")}<em className="pin">5</em></span>
               </div>
@@ -129,7 +129,7 @@ export default function Guide() {
 
           {/* ---------------- Dojo ---------------- */}
           <section {...sec("dojo")} className="g-sec">
-            <Panel kj="道場" title={G.dojo.title} right={<OpenLink to="/dojo" label={t("nav.dojo")} />}>
+            <Panel title={G.dojo.title} right={<OpenLink to="/dojo" label={t("nav.dojo")} />}>
               <p className="g-intro">{G.dojo.intro}</p>
               <Items items={G.dojo.items} />
             </Panel>
@@ -137,7 +137,7 @@ export default function Guide() {
 
           {/* ---------------- Watchtower ---------------- */}
           <section {...sec("watch")} className="g-sec">
-            <Panel kj="望楼" title={G.watch.title} right={<OpenLink to="/watchtower" label={t("nav.watchtower")} />}>
+            <Panel title={G.watch.title} right={<OpenLink to="/watchtower" label={t("nav.watchtower")} />}>
               <p className="g-intro">{G.watch.intro}</p>
               <div className="g-two">
                 <div><Sub>{G.watch.stepsTitle}</Sub><Steps steps={G.watch.steps} /></div>
@@ -177,7 +177,7 @@ export default function Guide() {
 
           {/* ---------------- Celestial Scroll ---------------- */}
           <section {...sec("scroll")} className="g-sec">
-            <Panel kj="天巻" title={G.scroll.title} right={<OpenLink to="/scroll" label={t("nav.scroll")} />}>
+            <Panel title={G.scroll.title} right={<OpenLink to="/scroll" label={t("nav.scroll")} />}>
               <p className="g-intro">{G.scroll.intro}</p>
               <Sub>{G.scroll.readTitle}</Sub>
               <Items items={G.scroll.read} cols={4} />
@@ -204,7 +204,7 @@ export default function Guide() {
 
           {/* ---------------- Spirit Lens ---------------- */}
           <section {...sec("lens")} className="g-sec">
-            <Panel kj="霊眼" title={G.lens.title} right={<OpenLink to="/lens" label={t("nav.lens")} />}>
+            <Panel title={G.lens.title} right={<OpenLink to="/lens" label={t("nav.lens")} />}>
               <p className="g-intro">{G.lens.intro}</p>
               <div className="g-two">
                 <div><Sub>{G.lens.stepsTitle}</Sub><Steps steps={G.lens.steps} /></div>
@@ -229,7 +229,7 @@ export default function Guide() {
 
           {/* ---------------- Honor ---------------- */}
           <section {...sec("honor")} className="g-sec">
-            <Panel kj="誉" title={G.honor.title} right={<OpenLink to="/dojo" label={t("nav.dojo")} />}>
+            <Panel title={G.honor.title} right={<OpenLink to="/dojo" label={t("nav.dojo")} />}>
               <p className="g-intro">{G.honor.intro}</p>
               <div className="g-three">
                 <div>
@@ -242,7 +242,7 @@ export default function Guide() {
                 </div>
                 <div>
                   <Sub>{G.honor.virtuesTitle}</Sub>
-                  <div className="g-virtues" aria-hidden="true">{["義", "勇", "仁", "礼", "誠", "名誉", "忠義"].map((v) => <span key={v}>{v}</span>)}</div>
+                  <div className="g-virtues">{["gi", "yu", "jin", "rei", "makoto", "meiyo", "chugi"].map((k) => <span key={k} title={t(`virtue.${k}`)}><BadgeIcon name={k} size={22} /></span>)}</div>
                   <p className="g-p">{G.honor.virtues}</p>
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function Guide() {
 
           {/* ---------------- Data ---------------- */}
           <section {...sec("data")} className="g-sec">
-            <Panel kj="源" title={G.data.title}>
+            <Panel title={G.data.title}>
               <p className="g-intro">{G.data.intro}</p>
               <ul className="g-badges">
                 {(["live", "cached", "computed", "demo"] as const).map((k) => (
@@ -263,14 +263,14 @@ export default function Guide() {
 
           {/* ---------------- Tips ---------------- */}
           <section {...sec("tips")} className="g-sec">
-            <Panel kj="心得" title={G.tips.title}>
+            <Panel title={G.tips.title}>
               <Items items={G.tips.items} />
             </Panel>
           </section>
 
           {/* ---------------- FAQ ---------------- */}
           <section {...sec("faq")} className="g-sec">
-            <Panel kj="問" title={G.faq.title}>
+            <Panel title={G.faq.title}>
               <div className="g-faq">
                 {G.faq.items.map((f) => (
                   <details key={f.q}><summary>{f.q}</summary><p>{f.a}</p></details>

@@ -30,7 +30,7 @@ function Tonight() {
       .then((r) => setS(r.data)).catch((e) => setErr(String(e.message || e)));
   }, [at.lat, at.lon]);
   return (
-    <Panel className="span-4" kj="今夜" title={t("dojo.tonight")}>
+    <Panel className="span-4" title={t("dojo.tonight")}>
       <div className="faint small">{planned ? t("dojo.planned") : t("dojo.yourpoint")}: <span className="muted">{at.name}</span></div>
       {err && <p className="small" style={{ color: "var(--bad)" }}>{err}</p>}
       {s && (
@@ -60,7 +60,7 @@ function Moon() {
     api<MoonInfo>(`/api/sky/moon?lat=${place.lat}&lon=${place.lon}`).then((r) => setM(r.data)).catch((e) => setErr(String(e.message || e)));
   }, [place.lat, place.lon]);
   return (
-    <Panel className="span-4" kj="月" title={t("dojo.moon")}>
+    <Panel className="span-4" title={t("dojo.moon")}>
       {err && <p className="small" style={{ color: "var(--bad)" }}>{err}</p>}
       {m ? (
         <div className="moon-card">
@@ -103,7 +103,7 @@ function ComingUp() {
     });
   }, [place.lat, place.lon]);
   return (
-    <Panel className="span-4" kj="次" title={t("dojo.next")}>
+    <Panel className="span-4" title={t("dojo.next")}>
       {!evs && <Slot loading body={t("watch.loading")} />}
       <ul className="coming">
         {evs?.map((e) => (
@@ -129,7 +129,7 @@ function TopSpots() {
       .then((r) => setD(r.data)).catch((e) => setErr(String(e.message)));
   }, [place.lat, place.lon]);
   return (
-    <Panel className="span-12" kj="場所" title={t("dojo.spots")} right={<Link to="/watchtower" className="small">{t("dojo.goto.watch")} →</Link>}>
+    <Panel className="span-12" title={t("dojo.spots")} right={<Link to="/watchtower" className="small">{t("dojo.goto.watch")} →</Link>}>
       {err && <p className="small" style={{ color: "var(--bad)" }}>{err}</p>}
       {!d && !err && <Slot loading body={t("watch.loading")} h={90} />}
       <div className="top-spots">
@@ -158,7 +158,7 @@ function LensWorkspace() {
     })().catch(() => {});
   }, []);
   return (
-    <Panel className="span-7" kj="霊眼" title={t("dojo.lens")}
+    <Panel className="span-7" title={t("dojo.lens")}
       right={r && <div className="seg"><button aria-pressed={mist} onClick={() => setMist((v) => !v)}>{t("lens.mist")}</button></div>}>
       {r ? (
         <div className="dojo-lens">
@@ -175,14 +175,14 @@ export default function Dojo() {
   const { t } = useI18n();
   return (
     <>
-      <PageScene kanji="道場" title={t("dojo.title")} sub={t("dojo.sub")}><Scene variant="dojo" /></PageScene>
+      <PageScene title={t("dojo.title")} sub={t("dojo.sub")}><Scene variant="dojo" /></PageScene>
       <div className="page">
         <div className="grid g-12">
           <Tonight />
           <Moon />
           <ComingUp />
           <LensWorkspace />
-          <Panel className="span-5" kj="天球" title={t("dojo.sky")}><SkyDome /></Panel>
+          <Panel className="span-5" title={t("dojo.sky")}><SkyDome /></Panel>
           <TopSpots />
           
           <HonorPanel className="span-12" />

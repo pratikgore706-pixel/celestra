@@ -20,10 +20,10 @@ export function todayLocal() {
 }
 
 export const BAND_COLOR: Record<string, string> = {
-  shogun: "var(--gold)", clear: "var(--good)", mist: "var(--warn-2)", storm: "var(--vermilion)",
+  shogun: "var(--good)", clear: "var(--accent)", mist: "var(--warn)", storm: "var(--bad)",
 };
 export const BAND_HEX: Record<string, string> = {
-  shogun: "#e2b54e", clear: "#4fc27a", mist: "#d08a4a", storm: "#e0444e",
+  shogun: "#3ddc97", clear: "#5b9cff", mist: "#ffb547", storm: "#ff5d5d",
 };
 
 type T = (k: string) => string;
@@ -44,11 +44,8 @@ export function evTitle(e: Ev, t: T): string {
 
 /** Name of a lunar night in the selected language; Japanese kanji only in Japanese. */
 export function lunarName(ld: { day: number; kanji: string; romaji: string }, t: T, lang: Lang): { name: string; sub: string } {
-  if (lang === "ja") return { name: ld.kanji, sub: ld.romaji };
-  const k = t(`lunar.${ld.day}`);
-  const name = k.startsWith("lunar.") ? t("lunar.day").replace("{n}", String(ld.day)) : k;
-  const sub = ld.romaji.startsWith("Day ") ? "" : `${t("lunar.jp")}: ${ld.romaji}`;
-  return { name, sub };
+  void lang;
+  return { name: t("lunar.day").replace("{n}", String(ld.day)), sub: "" };
 }
 
 export function locale(lang: Lang) { return LOCALE[lang]; }

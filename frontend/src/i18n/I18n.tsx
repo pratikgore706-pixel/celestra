@@ -7,10 +7,10 @@ const I18nCtx = createContext<Ctx | null>(null);
 function initialLang(): Lang {
   try {
     const saved = localStorage.getItem("celestra.lang") as Lang | null;
-    if (saved && saved in STRINGS) return saved;
+    if (saved && saved in STRINGS && saved !== "ja") return saved;
   } catch { /* storage unavailable */ }
   const nav = navigator.language.slice(0, 2);
-  return nav === "hi" || nav === "ja" || nav === "pa" ? nav : "en";
+  return nav === "hi" || nav === "pa" ? nav : "en";
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {

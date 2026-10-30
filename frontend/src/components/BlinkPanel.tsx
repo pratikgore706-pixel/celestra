@@ -4,7 +4,7 @@ import { api, apiUrl } from "../api/client";
 import type { BlinkResult } from "../api/types";
 import { Panel, Slot } from "./Panel";
 
-const KIND_COLOR: Record<string, string> = { new: "#e2452f", vanished: "#8fa6dc", brightened: "#e3b04b", faded: "#a59cae" };
+const KIND_COLOR: Record<string, string> = { new: "#ff5d5d", vanished: "#5b9cff", brightened: "#ffb547", faded: "#93a0b8" };
 
 export default function BlinkPanel() {
   const { t } = useI18n();
@@ -33,7 +33,7 @@ export default function BlinkPanel() {
 
   const img = res ? (diff ? res.files.diff : frame === 0 ? res.files.a : res.files.b) : null;
   return (
-    <Panel className="span-12" kj="明滅" title={t("blink.title")}>
+    <Panel className="span-12" title={t("blink.title")}>
       <p className="small muted" style={{ marginTop: -6 }}>{t("blink.sub")}</p>
       <div className="row">
         <input id="blink-target" className="field" style={{ flex: "1 1 240px" }} value={target} placeholder={t("blink.target")} onChange={(e) => setTarget(e.target.value)} />

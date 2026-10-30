@@ -9,7 +9,7 @@ import { fmtTime } from "../lib/format";
 import { scheduleNotifications } from "../lib/alerts";
 import MonLogo from "./MonLogo";
 
-/** Two skies: 夜 Yoru (deep night) and 暁 Akatsuki (the lighter sky just before dawn). */
+/** Two looks: Night (deep space) and Dawn (lighter steel blue for daytime). */
 function ThemeSwitch() {
   const { t } = useI18n();
   const [theme, setTheme] = useState<"yoru" | "akatsuki">(() => {
@@ -103,11 +103,11 @@ function OmamoriBanner() {
 export default function Layout() {
   const { t, lang, setLang } = useI18n();
   const links = [
-    { to: "/dojo", kj: "道場", k: "nav.dojo" },
-    { to: "/watchtower", kj: "望楼", k: "nav.watchtower" },
-    { to: "/scroll", kj: "天巻", k: "nav.scroll" },
-    { to: "/lens", kj: "霊眼", k: "nav.lens" },
-    { to: "/guide", kj: "指南", k: "nav.guide" },
+    { to: "/dojo", k: "nav.dojo" },
+    { to: "/watchtower", k: "nav.watchtower" },
+    { to: "/scroll", k: "nav.scroll" },
+    { to: "/lens", k: "nav.lens" },
+    { to: "/guide", k: "nav.guide" },
   ] as const;
   return (
     <div className="shell">

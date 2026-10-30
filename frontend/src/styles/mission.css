@@ -1,0 +1,117 @@
+/* ============================================================
+   Mission: Celestra's space-exploration finish.
+   Deep-space navy surfaces, cool steel hairlines, a single
+   mission-blue accent, Roboto throughout. Loaded last; it changes
+   the finish only, never the layout. The landing page (.lp) keeps
+   its own look and is re-scoped at the bottom of this file.
+   ============================================================ */
+:root, html[data-theme="yoru"] {
+  --ink: #05080f; --night: #0b111c; --night-2: #101828;
+  --rule: rgba(148, 170, 210, 0.10); --rule-strong: rgba(148, 170, 210, 0.22); --hair: rgba(148, 170, 210, 0.14);
+  --paper: #e7ecf5; --paper-hi: #f5f8fc; --mist: #93a0b8; --faint: #66728a;
+  --accent: #5b9cff; --accent-hi: #8bbaff; --accent-ink: #ffffff;
+  --gold: var(--accent); --gold-hi: var(--accent-hi); --gold-dim: #3a64a8;
+  --vermilion: var(--accent); --crimson: #d94a3d; --moon: #e9ecf2;
+  --good: #3ddc97; --warn: #ffb547; --bad: #ff5d5d;
+  --ring-track: rgba(91, 156, 255, 0.15); --active-bg: rgba(91, 156, 255, 0.10);
+  --panel-top: var(--night); --panel-bot: var(--night); --panel-line: var(--hair); --panel-head-line: var(--rule);
+  --field-bg: #08101b; --field-line: rgba(148, 170, 210, 0.2);
+  --bar-bg: rgba(5, 8, 15, 0.92); --slot-bg: #08101b;
+  --f-display: "Roboto", "Noto Sans Devanagari", "Noto Sans Gurmukhi", system-ui, sans-serif;
+  --f-body: "Roboto", "Noto Sans Devanagari", "Noto Sans Gurmukhi", system-ui, sans-serif;
+  --f-mono: "Roboto Mono", ui-monospace, Consolas, monospace;
+}
+html[data-theme="akatsuki"] {
+  --ink: #0f1a2e; --night: #16233b; --night-2: #1c2b47;
+  --rule: rgba(170, 195, 235, 0.12); --rule-strong: rgba(170, 195, 235, 0.28); --hair: rgba(170, 195, 235, 0.18);
+  --paper: #eef2f9; --paper-hi: #ffffff; --mist: #b3c0d6; --faint: #8796b1;
+  --panel-top: var(--night); --panel-bot: var(--night); --field-bg: #132038; --bar-bg: rgba(15, 26, 46, 0.94); --slot-bg: #132038;
+  --ring-track: rgba(91, 156, 255, 0.22); --active-bg: rgba(91, 156, 255, 0.16);
+}
+
+body { background: var(--ink); font-family: var(--f-body); letter-spacing: 0; -webkit-font-smoothing: antialiased; }
+body:not(:has(.lp)) { background:
+  radial-gradient(1200px 500px at 85% -10%, rgba(91, 156, 255, 0.07), transparent 60%),
+  radial-gradient(900px 400px at 0% 0%, rgba(124, 92, 255, 0.05), transparent 60%), var(--ink); background-attachment: fixed; }
+::selection { background: rgba(91, 156, 255, 0.35); color: #fff; }
+
+/* top bar */
+.topbar { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom-color: var(--hair); }
+.brand-name { font-family: var(--f-display); font-weight: 500; font-size: 17px; letter-spacing: 0.28em; }
+.nav a { font-weight: 400; letter-spacing: 0.02em; }
+.nav a.active { font-weight: 500; }
+.nav a.active::after { background: var(--accent); height: 2px; box-shadow: 0 0 12px rgba(91, 156, 255, 0.6); }
+.api { font-family: var(--f-mono); }
+.api.ok i { box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.15); }
+.sky-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.lang button[aria-pressed="true"] { box-shadow: inset 0 -2px 0 var(--accent); }
+
+/* tonight strip */
+.omamori-in { color: var(--mist); }
+.omamori-mark::after { background: rgba(91, 156, 255, 0.45); }
+
+/* page header */
+.scene { background: #03060c; }
+.scene-seal, .scene-kanji { display: none !important; }
+.scene-eyebrow { color: var(--accent-hi); letter-spacing: 0.2em; }
+.scene-text h1 { font-weight: 500; letter-spacing: -0.01em; }
+
+/* panels */
+.panel { border-radius: 14px; background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0) 40%), var(--night);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 24px 48px -32px rgba(0, 0, 0, 0.9); }
+.panel-h h2 { font-weight: 500; }
+.panel-title { font-weight: 500; letter-spacing: 0; }
+.hanko-kj { display: none !important; }
+.stat, .rank-score, .enso .stat, .ev-title, .moon-kanji, footer.foot div > span:first-child { font-weight: 500; letter-spacing: -0.01em; }
+.rank-n.roman, .rank-n { font-family: var(--f-mono); font-size: 15px; }
+.band-name { font-family: var(--f-mono); letter-spacing: 0.18em; }
+
+/* controls */
+.btn, .btn.sm { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; border-radius: 10px; letter-spacing: 0.02em; }
+.btn:hover { background: var(--accent-hi); border-color: var(--accent-hi); color: #05080f; }
+.btn.ghost, .btn.ghost.sm { border-radius: 10px; }
+.btn.ghost:hover { border-color: var(--accent); background: rgba(91, 156, 255, 0.08); }
+.field { border-radius: 10px; }
+.field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91, 156, 255, 0.18); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
+.seg[aria-label="Event types"] button[aria-pressed="true"] { background: rgba(91, 156, 255, 0.12); color: var(--paper); }
+.chip.conf-high { border-color: rgba(61, 220, 151, 0.5); }
+
+/* lists and tiles */
+.rank button:hover { background: rgba(91, 156, 255, 0.05); }
+.rank button[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgba(91, 156, 255, 0.4); }
+.g-card.accent { border-color: rgba(91, 156, 255, 0.45); }
+.g-num { color: var(--accent-ink); }
+.g-kj { color: var(--accent); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; }
+.bar { background: rgba(148, 170, 210, 0.10); }
+
+/* mission badges */
+.virtue .vk { color: #3a4660; display: flex; justify-content: center; }
+.virtue.earned { background: rgba(91, 156, 255, 0.08); border-color: rgba(91, 156, 255, 0.45); }
+.virtue.earned .vk { color: var(--accent-hi); filter: drop-shadow(0 0 6px rgba(91, 156, 255, 0.5)); }
+.g-virtues { display: flex; flex-wrap: wrap; gap: 10px; }
+.g-virtues span { display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center;
+  border: 1px solid var(--rule-strong); border-radius: 10px; color: var(--accent-hi); background: var(--active-bg); font-size: 0; }
+
+/* integrity check */
+.hanko { border: 1.5px solid var(--good); color: var(--good); border-radius: 50%; transform: none; font-family: var(--f-body); font-weight: 700; }
+.stamp.fail .hanko { border-color: var(--bad); color: var(--bad); }
+
+/* failures stay red even though the accent is blue */
+.chk.no, .chk.no .chk-s, .stamp.fail .stamp-t { color: var(--bad); }
+.mk-invented { stroke: var(--bad); } .mk-label { fill: var(--bad); }
+.g-seg i.on, .g-bar-banner i { color: #fff; }
+
+/* ============ landing page keeps its original finish ============ */
+.lp {
+  --f-display: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", Georgia, serif;
+  --f-body: "Manrope", "Noto Sans Devanagari", "Noto Sans Gurmukhi", "Zen Kaku Gothic New", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --vermilion: #c8323c; --gold: #d8bd7e; --gold-hi: #f0d79c; --gold-dim: #8f7a4a;
+  --paper: #ece8df; --paper-hi: #f4f0e6; --mist: #9aa0af; --faint: #6f7586;
+  font-family: var(--f-body);
+}
+.lp .btn, .lp .btn.sm { border-radius: 999px; background: var(--gold); border-color: var(--gold); color: #0b0c10; font-weight: 700; }
+.lp .btn:hover { background: var(--gold-hi); border-color: var(--gold-hi); color: #0b0c10; }
+.lp .btn.ghost { background: transparent; border: 1px solid rgba(216, 189, 126, 0.3); color: var(--paper); font-weight: 500; border-radius: 999px; }
+.lp .btn.ghost:hover { border-color: var(--gold); background: rgba(216, 189, 126, 0.06); }

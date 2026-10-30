@@ -1,11 +1,11 @@
-/** Family-crest style mark: crescent moon inside a ring. */
+/** Celestra mark: a planet with a tilted orbit and a satellite on it. */
 export default function MonLogo({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <circle cx="16" cy="16" r="14.5" fill="none" stroke="#e3b04b" strokeWidth="1.5" />
-      <circle cx="16" cy="16" r="10" fill="#f1dca6" />
-      <circle cx="20.5" cy="13" r="9" fill="#0b0a10" />
-      <circle cx="9" cy="22" r="1.3" fill="#e2452f" />
+      <circle cx="16" cy="16" r="7.2" fill="var(--accent, #5b9cff)" />
+      <circle cx="13.8" cy="13.6" r="2.4" fill="#ffffff" fillOpacity="0.28" />
+      <ellipse cx="16" cy="16" rx="14" ry="5.2" fill="none" stroke="var(--paper, #e7ecf5)" strokeOpacity="0.85" strokeWidth="1.3" transform="rotate(-24 16 16)" />
+      <circle cx="28.4" cy="10.4" r="1.9" fill="var(--paper, #e7ecf5)" />
     </svg>
   );
 }

@@ -88,7 +88,7 @@ function SpotDetail({ spot, meta }: { spot: Spot; meta: Meta | null }) {
   const isPlanned = planned?.id === spot.id && planned.lat === spot.lat;
   const win = s.window;
   return (
-    <Panel className="span-12" kj="誉" title={spot.id === "here" ? t("type.here") : spot.name}
+    <Panel className="span-12" title={spot.id === "here" ? t("type.here") : spot.name}
       right={<span className="row">{spot.curated && <span className="chip demo">{t("watch.curated")}</span>}<span className="chip">{t(`type.${spot.type}`)} · {spot.dist_km} {t("watch.km")}</span></span>}>
       <div className="detail">
         <div>
@@ -176,7 +176,7 @@ export default function Watchtower() {
 
   return (
     <>
-      <PageScene kanji="望楼" title={t("watch.title")} sub={t("watch.sub")}><Scene variant="watchtower" moonX={900} /></PageScene>
+      <PageScene title={t("watch.title")} sub={t("watch.sub")}><Scene variant="watchtower" moonX={900} /></PageScene>
       <div className="page">
         <div className="row" style={{ marginTop: 24 }}>
           <PlaceSearch />
@@ -195,7 +195,7 @@ export default function Watchtower() {
         {data?.warnings.map((w, i) => <div className="notice" key={i}>{w}</div>)}
 
         <div className="grid g-12">
-          <Panel className="span-8" kj="地図" title={t("watch.map")} right={loading ? <Spinner label={t("watch.loading")} /> : null}>
+          <Panel className="span-8" title={t("watch.map")} right={loading ? <Spinner label={t("watch.loading")} /> : null}>
             <div className="map-frame">
               <MapContainer center={[place.lat, place.lon]} zoom={9} style={{ height: 460 }} scrollWheelZoom>
                 <TileLayer
@@ -216,7 +216,7 @@ export default function Watchtower() {
               </MapContainer>
             </div>
           </Panel>
-          <Panel className="span-4" kj="順位" title={t("watch.list")}>
+          <Panel className="span-4" title={t("watch.list")}>
             <ol className="rank">
               {data && all.map((s, i) => (
                 <li key={s.id}>

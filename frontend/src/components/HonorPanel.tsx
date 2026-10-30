@@ -5,6 +5,7 @@ import type { HonorSummary } from "../api/types";
 import { usePlace } from "../lib/place";
 import { Panel } from "./Panel";
 import Enso from "./Enso";
+import BadgeIcon from "./BadgeIcon";
 
 const TYPES = ["sky", "moon", "meteor", "eclipse", "iss", "planet", "launch"];
 
@@ -42,7 +43,7 @@ export default function HonorPanel({ className = "span-12" }: { className?: stri
     .catch((e) => setToast(String(e.message)));
 
   return (
-    <Panel className={className} kj="誉" title={t("honor.title")}
+    <Panel className={className} title={t("honor.title")}
       right={<button className="btn sm" onClick={() => setOpen((o) => !o)}>{t("honor.log")}</button>}>
       {open && (
         <div className="log-form">
@@ -68,9 +69,8 @@ export default function HonorPanel({ className = "span-12" }: { className?: stri
             <div className="virtues">
               {h.badges.map((b) => (
                 <div key={b.key} className={`virtue ${b.earned ? "earned" : ""}`} title={t(`virtue.${b.key}.rule`)}>
-                  <div className="vk">{b.kanji}</div>
+                  <div className="vk"><BadgeIcon name={b.key} /></div>
                   <b>{t(`virtue.${b.key}`)}</b>
-                  <span className="small faint">{b.romaji}</span>
                   <div className="vbar"><i style={{ width: `${Math.min(100, (b.have / b.need) * 100)}%` }} /></div>
                   <span className="small faint num">{Math.min(b.have, b.need)}/{b.need}</span>
                 </div>

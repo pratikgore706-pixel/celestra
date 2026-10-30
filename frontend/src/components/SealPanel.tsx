@@ -2,14 +2,14 @@ import type { LensResult } from "../api/types";
 import { useI18n } from "../i18n/I18n";
 
 export default function SealPanel({ r, compact = false }: { r: LensResult; compact?: boolean }) {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const s = r.seal;
   const fmt = (c: (typeof s.checks)[number]) =>
     c.key === "kept" ? `${c.value}%` : c.key === "flux" ? `×${c.value}` : c.key === "position" ? `${c.value} px` : c.key === "residual" ? `${c.value}σ${c.blobs ? ` · ${c.blobs} blob${c.blobs > 1 ? "s" : ""}` : ""}` : String(c.value);
   return (
     <div className={compact ? "seal-compact" : ""}>
       <div className={`stamp ${s.sealed ? "" : "fail"}`}>
-        <div className="hanko" aria-hidden="true">{lang === "ja" ? (s.sealed ? "真" : "否") : s.sealed ? "✓" : "✕"}</div>
+        <div className="hanko" aria-hidden="true">{s.sealed ? "✓" : "✕"}</div>
         <div>
           <b className="stamp-t">{s.sealed ? t("lens.sealed") : t("lens.unsealed")}</b>
           <div className="small muted">{s.sealed ? t("lens.sealed.sub") : t("lens.unsealed.sub")}</div>

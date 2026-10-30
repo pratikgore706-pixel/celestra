@@ -95,10 +95,10 @@ export default function Lens() {
 
   return (
     <>
-      <PageScene kanji="霊眼" title={t("lens.title")} sub={t("lens.sub")}><Scene variant="lens" moonX={760} /></PageScene>
+      <PageScene title={t("lens.title")} sub={t("lens.sub")}><Scene variant="lens" moonX={760} /></PageScene>
       <div className="page">
         <div className="grid g-12">
-          <Panel className="span-12" kj="入" title={t("lens.upload")}>
+          <Panel className="span-12" title={t("lens.upload")}>
             <div className="lens-in">
               <div className={`drop ${over ? "over" : ""}`} onDragOver={(e) => { e.preventDefault(); setOver(true); }} onDragLeave={() => setOver(false)} onDrop={onDrop}
                 onClick={() => fileRef.current?.click()} role="button" tabIndex={0} onKeyDown={(e) => e.key === "Enter" && fileRef.current?.click()}>
@@ -136,7 +136,7 @@ export default function Lens() {
             {err && <div className="notice bad">{err}</div>}
           </Panel>
 
-          <Panel className="span-8" kj="比較" title={r ? r.name : t("lens.compare")}
+          <Panel className="span-8" title={r ? r.name : t("lens.compare")}
             right={r && (
               <div className="seg" role="group">
                 <button aria-pressed={overlay} onClick={() => setOverlay((v) => !v)}>{t("lens.overlay")}</button>
@@ -154,8 +154,8 @@ export default function Lens() {
           </Panel>
 
           <div className="span-4 stack">
-            <Panel kj="印" title={t("lens.seal")}>{r ? <SealPanel r={r} /> : <Slot body={t("lens.seal.empty")} h={180} />}</Panel>
-            <Panel kj="天体" title={t("lens.objects")}
+            <Panel title={t("lens.seal")}>{r ? <SealPanel r={r} /> : <Slot body={t("lens.seal.empty")} h={180} />}</Panel>
+            <Panel title={t("lens.objects")}
               right={r && <span className="small mono"><span style={{ color: "var(--gold)" }}>● {r.counts.stars}</span> <span style={{ color: "var(--sakura)" }}>◯ {r.counts.extended}</span></span>}>
               {r ? (
                 <>

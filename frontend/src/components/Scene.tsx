@@ -1,152 +1,123 @@
 /**
- * Page header art: flat stepped sky bands, a large moon disc,
- * three hill layers and a black foreground silhouette that changes per page.
- * All flat fills. No gradients, no blur.
+ * Page header art for the mission theme: deep-space gradient, a seeded starfield,
+ * a planet limb with atmospheric glow along the bottom edge and a per-page motif
+ * (satellite pass, ground-station dish, orbital paths, spiral galaxy, constellation).
  */
 export type SceneVariant = "dojo" | "watchtower" | "scroll" | "lens" | "guide";
 
-const SKIES: Record<SceneVariant, string[]> = {
-  // top -> horizon
-  dojo: ["#07090e", "#0a0d14", "#0e121b", "#131823", "#1a1f2c", "#262434"],
-  watchtower: ["#07090e", "#0a0d15", "#0d121c", "#121825", "#18202e", "#212a3a"],
-  scroll: ["#07090e", "#0a0d14", "#0e121a", "#141822", "#1d1f2b", "#2c2230"],
-  lens: ["#07090e", "#0a0c15", "#0e111d", "#131726", "#1a1e30", "#23253b"],
-  guide: ["#07090e", "#0a0c14", "#0e111b", "#141824", "#1b1f2d", "#272534"],
-};
-const HILLS: Record<SceneVariant, [string, string, string]> = {
-  dojo: ["#1b1f2a", "#12151d", "#0a0c11"],
-  watchtower: ["#1a2030", "#121621", "#0a0c12"],
-  scroll: ["#1d1e2a", "#13151d", "#0a0c11"],
-  lens: ["#1a1d2c", "#12141f", "#0a0b12"],
-  guide: ["#1b1e2b", "#12151e", "#0a0c11"],
-};
-
 const W = 1440, H = 240;
 
-function Sky({ v }: { v: SceneVariant }) {
-  const bands = SKIES[v];
-  const bh = 150 / bands.length;
-  return (
-    <g>
-      {bands.map((c, i) => <rect key={i} x={0} y={i * bh} width={W} height={bh + 1} fill={c} />)}
-      <rect x={0} y={150} width={W} height={H - 150} fill={bands[bands.length - 1]} />
-    </g>
-  );
+const TINT: Record<SceneVariant, string> = {
+  dojo: "#2a5bd7", watchtower: "#1f7a8c", scroll: "#5a49c9", lens: "#7a3fb8", guide: "#2a6fc9",
+};
+
+function rand(seed: number) {
+  let s = seed;
+  return () => ((s = (s * 16807) % 2147483647) / 2147483647);
 }
 
-function Stars() {
-  const pts = [[80, 22], [210, 48], [330, 18], [470, 60], [610, 30], [760, 14], [905, 44], [1040, 20], [1180, 52], [1320, 26], [1400, 70], [150, 90], [560, 96], [1250, 92]];
-  return <g className="stars" fill="#f1dca6">{pts.map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? 1.6 : 1} opacity={0.75} />)}</g>;
+function Stars({ seed }: { seed: number }) {
+  const r = rand(seed);
+  const pts = Array.from({ length: 140 }, () => ({ x: r() * W, y: r() * 200, s: r() < 0.08 ? 1.4 : r() < 0.4 ? 0.9 : 0.55, o: 0.25 + r() * 0.65 }));
+  return <g fill="#dfe8ff">{pts.map((p, i) => <circle key={i} cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={p.s} opacity={p.o.toFixed(2)} />)}</g>;
 }
 
-function Hills({ v }: { v: SceneVariant }) {
-  const [h1, h2, h3] = HILLS[v];
-  return (
-    <g>
-      <path fill={h1} d="M0 168 L120 140 L210 156 L330 118 L470 150 L560 132 L700 160 L820 122 L960 150 L1080 128 L1220 158 L1330 136 L1440 150 L1440 240 L0 240Z" />
-      <path fill={h2} d="M0 192 L90 176 L200 190 L310 164 L430 186 L560 170 L690 194 L800 172 L930 190 L1060 168 L1190 192 L1310 174 L1440 186 L1440 240 L0 240Z" />
-      <path fill={h3} d="M0 214 L160 204 L320 214 L480 202 L640 212 L800 204 L960 214 L1120 202 L1280 212 L1440 204 L1440 240 L0 240Z" />
-    </g>
-  );
-}
-
-function Foreground({ v }: { v: SceneVariant }) {
-  const ink = "#07060b";
-  if (v === "dojo") {
-    // samurai on a rock, katana drawn, facing the moon
-    return (
-      <g fill={ink}>
-        <path d="M1060 240 L1090 206 L1150 198 L1210 210 L1240 240Z" />
-        <circle cx="1146" cy="128" r="9" />
-        <path d="M1138 120 L1152 112 L1156 120Z" />
-        <path d="M1134 138 L1160 138 L1166 176 L1172 204 L1160 204 L1150 180 L1144 204 L1130 204 L1136 176Z" />
-        <path d="M1124 150 L1160 140 L1162 146 L1128 158Z" />
-        <path d="M1160 142 L1186 132 L1188 137 L1162 148Z" />
-        <path d="M1186 133 L1262 96 L1264 99 L1189 137Z" />
-        <path d="M0 240 L0 208 Q40 200 70 214 L110 240Z" />
-      </g>
-    );
+function Motif({ v, x }: { v: SceneVariant; x: number }) {
+  const line = { fill: "none", stroke: "#a9c4ff", strokeWidth: 1 } as const;
+  switch (v) {
+    case "dojo":
+      return (
+        <g>
+          <path d={`M${x - 360} 150 Q ${x} 40 ${x + 260} 110`} {...line} strokeOpacity="0.35" strokeDasharray="3 6" />
+          <g transform={`translate(${x + 40} 78) rotate(-18)`}>
+            <rect x="-6" y="-5" width="12" height="10" rx="1.5" fill="#cfdcf5" />
+            <rect x="-34" y="-3.5" width="24" height="7" fill="#3d6fd8" stroke="#a9c4ff" strokeWidth="0.6" />
+            <rect x="10" y="-3.5" width="24" height="7" fill="#3d6fd8" stroke="#a9c4ff" strokeWidth="0.6" />
+            <line x1="0" y1="5" x2="0" y2="11" stroke="#cfdcf5" strokeWidth="1" />
+          </g>
+        </g>
+      );
+    case "watchtower":
+      return (
+        <g transform={`translate(${x} 196)`} fill="#070b14" stroke="#5b7fb8" strokeWidth="0.8">
+          <path d="M-46 -40 A 52 52 0 0 0 46 -40 L 0 -16 Z" transform="rotate(-28)" />
+          <path d="M-6 -16 L-14 22 L14 22 L6 -16 Z" />
+          <line x1="0" y1="-30" x2="-18" y2="-62" stroke="#8fb0e8" />
+          <circle cx="-18" cy="-62" r="2.4" fill="#8fb0e8" stroke="none" />
+          <path d="M-24 -78 a 10 10 0 0 1 14 -2 M-28 -84 a 16 16 0 0 1 22 -3" fill="none" stroke="#5b9cff" strokeOpacity="0.7" />
+        </g>
+      );
+    case "scroll":
+      return (
+        <g>
+          {[0, 1, 2].map((i) => (
+            <ellipse key={i} cx={x} cy={96} rx={90 + i * 70} ry={22 + i * 15} {...line} strokeOpacity={0.32 - i * 0.07} transform={`rotate(-8 ${x} 96)`} />
+          ))}
+          <circle cx={x} cy={96} r={11} fill="#ffcf7a" />
+          <circle cx={x} cy={96} r={20} fill="#ffcf7a" opacity="0.12" />
+          <circle cx={x + 88} cy={88} r={4} fill="#8bbaff" />
+          <circle cx={x - 150} cy={112} r={5.5} fill="#c39bff" />
+          <circle cx={x + 218} cy={70} r={3.5} fill="#e7ecf5" />
+        </g>
+      );
+    case "lens":
+      return (
+        <g transform={`translate(${x} 92) rotate(-22)`}>
+          <ellipse rx="120" ry="34" fill="url(#gal)" />
+          {[0, 1].map((k) => (
+            <path key={k} d="M0 0 C 30 -24 80 -20 110 4 M0 0 C -30 24 -80 20 -110 -4" fill="none" stroke="#d8c6ff" strokeOpacity={0.35 - k * 0.15} strokeWidth={2 - k} transform={`scale(${1 - k * 0.35})`} />
+          ))}
+          <circle r="7" fill="#fff4dc" />
+        </g>
+      );
+    case "guide": {
+      const pts: [number, number][] = [[x - 220, 120], [x - 150, 74], [x - 70, 92], [x, 52], [x + 90, 70], [x + 160, 40], [x + 120, 120]];
+      return (
+        <g>
+          <polyline points={pts.slice(0, 6).map((p) => p.join(",")).join(" ")} {...line} strokeOpacity="0.4" />
+          <line x1={pts[4][0]} y1={pts[4][1]} x2={pts[6][0]} y2={pts[6][1]} {...line} strokeOpacity="0.4" />
+          {pts.map(([a, b], i) => <circle key={i} cx={a} cy={b} r={i === 3 ? 3.2 : 2.2} fill="#e7ecf5" />)}
+        </g>
+      );
+    }
   }
-  if (v === "watchtower") {
-    // pagoda watchtower on a cliff
-    return (
-      <g fill={ink}>
-        <path d="M1000 240 L1030 196 L1090 186 L1160 192 L1250 180 L1300 196 L1340 240Z" />
-        <rect x="1146" y="70" width="4" height="22" />
-        <path d="M1108 98 L1188 98 L1200 108 L1096 108Z" />
-        <rect x="1118" y="108" width="60" height="18" />
-        <path d="M1098 126 L1198 126 L1212 138 L1084 138Z" />
-        <rect x="1110" y="138" width="76" height="20" />
-        <path d="M1088 158 L1208 158 L1224 172 L1072 172Z" />
-        <rect x="1104" y="172" width="88" height="16" />
-        <path d="M120 240 L150 214 Q170 206 196 216 L230 240Z" />
-      </g>
-    );
-  }
-  if (v === "scroll") {
-    // torii gate with cranes crossing the moon
-    return (
-      <g fill={ink}>
-        <path d="M1020 98 Q1130 88 1240 98 L1246 88 Q1130 74 1014 88Z" />
-        <rect x="1032" y="102" width="196" height="9" />
-        <rect x="1060" y="96" width="13" height="144" />
-        <rect x="1188" y="96" width="13" height="144" />
-        <rect x="1125" y="111" width="10" height="16" />
-        <rect x="1040" y="128" width="180" height="7" />
-        <path d="M880 70 q14 -10 26 -2 q-10 2 -14 8 q12 -4 22 2 q-14 2 -20 10 l-4 -8 q-6 -2 -10 -10Z" />
-        <path d="M940 50 q10 -7 18 -1 q-7 1 -10 6 q9 -3 16 1 q-10 1 -14 7 l-3 -6 q-4 -1 -7 -7Z" />
-        <path d="M0 240 L60 216 L130 222 L170 240Z" />
-      </g>
-    );
-  }
-  if (v === "guide") {
-    // stone lantern (toro) lighting a path, with a small walking figure
-    return (
-      <g fill={ink}>
-        <path d="M900 240 L940 214 L1220 210 L1300 240Z" />
-        <rect x="1104" y="200" width="44" height="12" />
-        <rect x="1116" y="176" width="20" height="26" />
-        <rect x="1100" y="166" width="52" height="10" />
-        <rect x="1106" y="138" width="40" height="28" />
-        <rect x="1116" y="146" width="20" height="14" fill="#e2b54e" opacity=".85" />
-        <path d="M1090 138 L1126 112 L1162 138Z" />
-        <rect x="1122" y="102" width="8" height="12" />
-        <circle cx="1010" cy="178" r="7" />
-        <path d="M1002 186 L1018 186 L1024 214 L1016 214 L1010 198 L1004 214 L996 214Z" />
-        <path d="M1018 190 L1030 204 L1027 207 L1015 195Z" />
-      </g>
-    );
-  }
-  // lens: a lone figure under a pine branch with a telescope on a tripod
-  return (
-    <g fill={ink}>
-      <path d="M1440 0 L1440 70 Q1360 64 1300 84 Q1340 60 1290 56 Q1250 54 1210 70 Q1240 44 1200 36 L1320 20Z" />
-      <path d="M980 240 L1010 214 L1180 208 L1260 240Z" />
-      <circle cx="1090" cy="158" r="8" />
-      <path d="M1082 168 L1100 168 L1106 208 L1076 208Z" />
-      <path d="M1098 176 L1122 170 L1124 175 L1100 182Z" />
-      <path d="M1118 160 L1170 136 L1174 144 L1122 168Z" />
-      <path d="M1140 156 L1132 208 L1136 208 L1144 160Z" />
-      <path d="M1146 156 L1160 208 L1164 207 L1150 156Z" />
-    </g>
-  );
 }
 
 export default function Scene({ variant, moonX = 1180 }: { variant: SceneVariant; moonX?: number }) {
+  const tint = TINT[variant];
+  const seed = { dojo: 11, watchtower: 23, scroll: 37, lens: 41, guide: 53 }[variant];
   return (
     <svg className="art" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" role="img" aria-hidden="true">
-      <Sky v={variant} />
-      <Stars />
-      <g className="moon-rise">
-        <circle cx={moonX} cy={112} r={82} fill="none" stroke="#f1dca6" strokeOpacity="0.08" strokeWidth="10" />
-        <circle cx={moonX} cy={112} r={70} fill="none" stroke="#f1dca6" strokeOpacity="0.12" strokeWidth="3" />
-        <circle cx={moonX} cy={112} r={56} fill="#f1dca6" />
-        <circle cx={moonX - 16} cy={100} r={9} fill="#e2c98c" />
-        <circle cx={moonX + 18} cy={122} r={12} fill="#e2c98c" />
-        <circle cx={moonX + 6} cy={90} r={4} fill="#e2c98c" />
-      </g>
-      <Hills v={variant} />
-      <Foreground v={variant} />
+      <defs>
+        <linearGradient id={`sky-${variant}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#03060c" />
+          <stop offset="0.7" stopColor="#070d1a" />
+          <stop offset="1" stopColor="#0b1426" />
+        </linearGradient>
+        <radialGradient id={`neb-${variant}`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor={tint} stopOpacity="0.30" />
+          <stop offset="1" stopColor={tint} stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={`limb-${variant}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#7fb2ff" stopOpacity="0.38" />
+          <stop offset="0.015" stopColor="#2f5fb8" stopOpacity="0.22" />
+          <stop offset="0.06" stopColor="#0c1730" />
+          <stop offset="0.25" stopColor="#08101f" />
+          <stop offset="1" stopColor="#050912" />
+        </linearGradient>
+        <radialGradient id="gal" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#f3e6ff" stopOpacity="0.55" />
+          <stop offset="0.4" stopColor="#9b7bff" stopOpacity="0.18" />
+          <stop offset="1" stopColor="#9b7bff" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <rect width={W} height={H} fill={`url(#sky-${variant})`} />
+      <ellipse cx={moonX - 220} cy={70} rx={520} ry={150} fill={`url(#neb-${variant})`} />
+      <Stars seed={seed} />
+      <Motif v={variant} x={moonX} />
+      {/* planet limb */}
+      <ellipse cx={W / 2} cy={H + 1180} rx={1700} ry={1240} fill="#5b9cff" opacity="0.05" />
+      <ellipse cx={W / 2} cy={H + 1185} rx={1680} ry={1228} fill={`url(#limb-${variant})`} />
     </svg>
   );
 }

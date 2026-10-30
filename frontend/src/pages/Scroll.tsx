@@ -122,7 +122,7 @@ export default function Scroll() {
 
   return (
     <>
-      <PageScene kanji="天巻" title={t("scroll.title")} sub={t("scroll.sub")}><Scene variant="scroll" moonX={1130} /></PageScene>
+      <PageScene title={t("scroll.title")} sub={t("scroll.sub")}><Scene variant="scroll" moonX={1130} /></PageScene>
       <div className="page">
         <div className="row" style={{ marginTop: 24, justifyContent: "space-between" }}>
           <div className="row">
@@ -145,7 +145,7 @@ export default function Scroll() {
         {err.map((m) => <div className="notice" key={m}>{m}</div>)}
 
         <div className="grid g-12">
-          <Panel className="span-8" kj="月暦" title={t("scroll.cal")} right={<span className="faint small mono">{place.name}</span>}>
+          <Panel className="span-8" title={t("scroll.cal")} right={<span className="faint small mono">{place.name}</span>}>
             <div className="cal">
               {weekdays.map((w) => <div key={w} className="cal-wd">{w}</div>)}
               {Array.from({ length: lead }, (_, i) => <div key={`b${i}`} />)}
@@ -166,7 +166,7 @@ export default function Scroll() {
           </Panel>
 
           <div className="span-4 stack">
-            <Panel kj="現象" title={new Date(sel + "T12:00").toLocaleDateString(LOC[lang], { weekday: "long", day: "numeric", month: "long" })}>
+            <Panel title={new Date(sel + "T12:00").toLocaleDateString(LOC[lang], { weekday: "long", day: "numeric", month: "long" })}>
               {selDay && (
                 <div className="moon-line">
                   <MoonGlyph angle={selDay.phase_angle} size={48} />
@@ -182,7 +182,7 @@ export default function Scroll() {
                 {(byDay[sel] ?? []).length === 0 && <p className="small faint">{t("scroll.none")}</p>}
               </div>
             </Panel>
-            <Panel kj="知らせ" title={t("scroll.alerts")}>
+            <Panel title={t("scroll.alerts")}>
               {alerts.length === 0 && <p className="small faint">{t("scroll.alerts.empty")}</p>}
               <ul className="alerts">
                 {alerts.map((a) => (
@@ -196,7 +196,7 @@ export default function Scroll() {
             </Panel>
           </div>
 
-          <Panel className="span-6" kj="駅" title={t("scroll.iss")}>
+          <Panel className="span-6" title={t("scroll.iss")}>
             {iss === null && <p className="small faint"><Spinner label={t("scroll.loading")} /></p>}
             {iss?.length === 0 && <p className="small faint">{t("scroll.iss.empty")}</p>}
             {iss && iss.length > 0 && (
@@ -219,7 +219,7 @@ export default function Scroll() {
               </table>
             )}
           </Panel>
-          <Panel className="span-6" kj="発射" title={t("scroll.launches")}>
+          <Panel className="span-6" title={t("scroll.launches")}>
             {launches === null && <p className="small faint"><Spinner label={t("scroll.loading")} /></p>}
             <ul className="launches">
               {(launches ?? []).slice(0, 6).map((l) => (

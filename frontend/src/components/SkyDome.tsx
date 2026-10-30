@@ -32,21 +32,21 @@ export default function SkyDome() {
   return (
     <div className="dome">
       <svg viewBox="0 0 280 280" role="img" aria-label="Sky dome: where the Moon and the next ISS pass are">
-        <circle cx={C} cy={C} r={R} fill="#0e0d16" stroke="#4a4358" />
+        <circle cx={C} cy={C} r={R} fill="#070c16" stroke="#26324a" />
         {[30, 60].map((a) => <circle key={a} cx={C} cy={C} r={((90 - a) / 90) * R} fill="none" stroke="#2e2a3a" strokeDasharray="3 4" />)}
         <line x1={C - R} y1={C} x2={C + R} y2={C} stroke="#2e2a3a" />
         <line x1={C} y1={C - R} x2={C} y2={C + R} stroke="#2e2a3a" />
         {[["N", C, C - R - 8], ["E", C + R + 9, C + 4], ["S", C, C + R + 16], ["W", C - R - 9, C + 4]].map(([l, x, y]) => (
-          <text key={String(l)} x={Number(x)} y={Number(y)} textAnchor="middle" fill="#a59cae" fontSize="11" fontFamily="IBM Plex Mono, monospace">{l}</text>
+          <text key={String(l)} x={Number(x)} y={Number(y)} textAnchor="middle" fill="#93a0b8" fontSize="11" fontFamily="Roboto Mono, monospace">{l}</text>
         ))}
-        <text x={C + 4} y={C - ((90 - 60) / 90) * R - 3} fill="#6e6679" fontSize="9" fontFamily="IBM Plex Mono, monospace">60°</text>
-        {issPath && <path d={issPath} fill="none" stroke="#8fa6dc" strokeWidth="2" strokeDasharray="6 4" />}
-        {iss && (() => { const [x, y] = pos(iss.max_alt, iss.peak_az); return <circle cx={x} cy={y} r="4" fill="#8fa6dc" />; })()}
-        {m && <><circle cx={m[0]} cy={m[1]} r="11" fill="#f1dca6" /><circle cx={m[0]} cy={m[1]} r="15" fill="none" stroke="#e3b04b" strokeOpacity="0.5" /></>}
+        <text x={C + 4} y={C - ((90 - 60) / 90) * R - 3} fill="#66728a" fontSize="9" fontFamily="Roboto Mono, monospace">60°</text>
+        {issPath && <path d={issPath} fill="none" stroke="#5b9cff" strokeWidth="2" strokeDasharray="6 4" />}
+        {iss && (() => { const [x, y] = pos(iss.max_alt, iss.peak_az); return <circle cx={x} cy={y} r="4" fill="#5b9cff" />; })()}
+        {m && <><circle cx={m[0]} cy={m[1]} r="11" fill="#f1dca6" /><circle cx={m[0]} cy={m[1]} r="15" fill="none" stroke="#5b9cff" strokeOpacity="0.5" /></>}
       </svg>
       <div className="small muted dome-legend">
         <div><i className="dot" style={{ background: "#f1dca6" }} />{moon ? (moon.altitude > 0 ? t("sky.moonup").replace("{a}", moon.altitude.toFixed(0)).replace("{z}", moon.azimuth.toFixed(0)) : t("sky.moondown").replace("{t}", fmtTime(moon.rise, lang))) : `${t("sky.moon")} …`}</div>
-        <div><i className="dot" style={{ background: "#8fa6dc" }} />ISS {iss ? `${fmtTime(iss.start, lang)} · ${iss.start_dir} → ${iss.end_dir}, ${iss.max_alt}°` : t("sky.noiss")}</div>
+        <div><i className="dot" style={{ background: "#5b9cff" }} />ISS {iss ? `${fmtTime(iss.start, lang)} · ${iss.start_dir} → ${iss.end_dir}, ${iss.max_alt}°` : t("sky.noiss")}</div>
         <div className="faint">{t("sky.help")}</div>
       </div>
     </div>

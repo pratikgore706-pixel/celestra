@@ -8,6 +8,7 @@ import "./styles/base.css";
 import "./styles/theme.css";
 import "./styles/tsukuyomi.css";
 import "./styles/lacquer.css";
+import "./styles/mission.css";
 import { installPunjabiDates } from "./lib/paDates";
 installPunjabiDates();
 
