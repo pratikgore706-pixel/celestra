@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Enso from "./Enso";
 import { useI18n } from "../i18n/I18n";
+import { usePlace } from "../lib/place";
+import { locale } from "../lib/format";
 
 export function Panel({ kj, title, right, children, className = "" }: {
   kj?: string; title: string; right?: ReactNode; children: ReactNode; className?: string;
@@ -26,8 +28,8 @@ export function Slot({ title, body, h = 140, loading = false }: { title?: string
     <div className={`slot ${loading ? "loading" : ""}`} style={{ minHeight: h }} aria-busy={loading || undefined}>
       <div className="slot-in">
         {loading
-          ? <Enso size={Math.max(46, Math.min(96, h * 0.42))} color="rgba(226,181,78,.85)" />
-          : h >= 180 && <Enso size={Math.min(110, h * 0.42)} color="rgba(227,176,75,.28)" />}
+          ? <Enso size={Math.max(40, Math.min(72, h * 0.34))} />
+          : h >= 180 && <Enso size={Math.min(84, h * 0.34)} color="var(--ring-track)" />}
         <div>{title && <b>{title}</b>}{body}</div>
       </div>
     </div>
@@ -36,6 +38,8 @@ export function Slot({ title, body, h = 140, loading = false }: { title?: string
 
 export function PageScene({ kanji, title, sub, children }: { kanji: string; title: string; sub: string; children: ReactNode }) {
   const { lang } = useI18n();
+  const { place } = usePlace();
+  const today = new Date().toLocaleDateString(locale(lang), { weekday: "long", day: "numeric", month: "long" });
   return (
     <header className="scene">
       {children}
@@ -43,9 +47,14 @@ export function PageScene({ kanji, title, sub, children }: { kanji: string; titl
       <div className="seigaiha" aria-hidden="true" />
       <div className="scene-text">
         <div className="scene-kanji" aria-hidden="true">{kanji}</div>
-        {lang === "ja" && <div className="kanji">{kanji}</div>}
-        <h1>{title}</h1>
-        <p>{sub}</p>
+        <div className="scene-head">
+          <span className="scene-seal" aria-hidden="true">{[...kanji].map((ch, i) => <span key={i}>{ch}</span>)}</span>
+          <div>
+            <div className="scene-eyebrow">{today} · {place.name}</div>
+            <h1>{title}</h1>
+            <p>{sub}</p>
+          </div>
+        </div>
       </div>
     </header>
   );

@@ -93,7 +93,7 @@ function SpotDetail({ spot, meta }: { spot: Spot; meta: Meta | null }) {
       <div className="detail">
         <div>
           <div className="eyebrow">{t("watch.score")}</div>
-          <Enso size={132} color={BAND_HEX[s.band]}><div className="stat num" style={{ color: BAND_COLOR[s.band], fontSize: 54 }}>{Math.round(s.headline)}</div></Enso>
+          <Enso size={140} value={s.headline}><div className="stat num" style={{ fontSize: 56 }}>{Math.round(s.headline)}</div></Enso>
           <div className="band-name" style={{ color: BAND_COLOR[s.band] }}>{t(`band.${s.band}`)}</div>
           {win && <div className="muted">{t("watch.best")}: <b className="num" style={{ color: "var(--paper)" }}>{fmtTime(win.start, lang)} – {fmtTime(win.end, lang)}</b></div>}
           <div className="row" style={{ marginTop: 10 }}>

@@ -36,7 +36,7 @@ function Tonight() {
       {s && (
         <>
           <div className="row" style={{ alignItems: "flex-end", marginTop: 6 }}>
-            <Enso size={104} color={BAND_HEX[s.band]}><div className="stat num" style={{ color: BAND_COLOR[s.band] }}>{Math.round(s.headline)}</div></Enso>
+            <Enso size={112} value={s.headline}><div className="stat num">{Math.round(s.headline)}</div></Enso>
             <div>
               <div className="band-name" style={{ color: BAND_COLOR[s.band] }}>{t(`band.${s.band}`)}</div>
               {s.window && <div className="small muted num">{fmtTime(s.window.start, lang)} – {fmtTime(s.window.end, lang)}</div>}
@@ -135,7 +135,7 @@ function TopSpots() {
       <div className="top-spots">
         {d?.spots.slice(0, 3).map((s, i) => (
           <div key={s.id} className="top-spot">
-            <span className="rank-n mono">{i + 1}</span>
+            <span className="rank-n roman">{["I", "II", "III"][i] ?? i + 1}</span>
             <div style={{ minWidth: 0 }}><b>{s.name}</b><div className="small faint">{t(`type.${s.type}`)} · {s.dist_km} {t("watch.km")}</div></div>
             <span className="rank-score num" style={{ color: BAND_COLOR[s.score.band] }}>{Math.round(s.score.headline)}</span>
           </div>
