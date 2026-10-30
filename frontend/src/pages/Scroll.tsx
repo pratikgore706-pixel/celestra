@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "../i18n/I18n";
 import Scene from "../components/Scene";
-import { Panel, PageScene } from "../components/Panel";
+import { Panel, PageScene, Spinner } from "../components/Panel";
 import MoonGlyph from "../components/MoonGlyph";
 import { api } from "../api/client";
 import type { Alert, CalDay, EventType, IssPass, SkyEvent } from "../api/types";
@@ -197,7 +197,7 @@ export default function Scroll() {
           </div>
 
           <Panel className="span-6" kj="駅" title={t("scroll.iss")}>
-            {iss === null && <p className="small faint">{t("scroll.loading")}</p>}
+            {iss === null && <p className="small faint"><Spinner label={t("scroll.loading")} /></p>}
             {iss?.length === 0 && <p className="small faint">{t("scroll.iss.empty")}</p>}
             {iss && iss.length > 0 && (
               <table className="tbl num">
@@ -220,7 +220,7 @@ export default function Scroll() {
             )}
           </Panel>
           <Panel className="span-6" kj="発射" title={t("scroll.launches")}>
-            {launches === null && <p className="small faint">{t("scroll.loading")}</p>}
+            {launches === null && <p className="small faint"><Spinner label={t("scroll.loading")} /></p>}
             <ul className="launches">
               {(launches ?? []).slice(0, 6).map((l) => (
                 <li key={l.id}>

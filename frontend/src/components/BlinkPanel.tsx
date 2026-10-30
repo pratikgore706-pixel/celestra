@@ -67,7 +67,7 @@ export default function BlinkPanel() {
                 <span className="mono faint">shift {res.shift_px.join(", ")} px · flux ×{res.flux_scale} · {res.seconds}s</span>
               </div>
             </>
-          ) : <Slot body={busy ? t("blink.working") : t("blink.sub")} h={280} />}
+          ) : <Slot loading={!!busy} body={busy ? t("blink.working") : t("blink.sub")} h={280} />}
         </div>
         <div>
           <div className="eyebrow" style={{ marginBottom: 8 }}>{t("blink.cands")} {res ? `· ${res.candidates.length}` : ""}</div>

@@ -45,7 +45,7 @@ function Tonight() {
           <HonorCurve score={s} height={110} />
         </>
       )}
-      {!s && !err && <Slot body={t("watch.loading")} h={150} />}
+      {!s && !err && <Slot loading body={t("watch.loading")} h={150} />}
       <Link to="/watchtower" className="small">{t("dojo.goto.watch")} →</Link>
     </Panel>
   );
@@ -73,7 +73,7 @@ function Moon() {
             <div className="small faint num">{t("moon.full")} {fmtDate(m.next_phases.full, lang)} · {t("moon.new")} {fmtDate(m.next_phases.new, lang)}</div>
           </div>
         </div>
-      ) : !err && <Slot body={t("watch.loading")} />}
+      ) : !err && <Slot loading body={t("watch.loading")} />}
     </Panel>
   );
 }
@@ -104,7 +104,7 @@ function ComingUp() {
   }, [place.lat, place.lon]);
   return (
     <Panel className="span-4" kj="次" title={t("dojo.next")}>
-      {!evs && <Slot body={t("watch.loading")} />}
+      {!evs && <Slot loading body={t("watch.loading")} />}
       <ul className="coming">
         {evs?.map((e) => (
           <li key={e.id}>
@@ -131,7 +131,7 @@ function TopSpots() {
   return (
     <Panel className="span-12" kj="場所" title={t("dojo.spots")} right={<Link to="/watchtower" className="small">{t("dojo.goto.watch")} →</Link>}>
       {err && <p className="small" style={{ color: "var(--bad)" }}>{err}</p>}
-      {!d && !err && <Slot body={t("watch.loading")} h={90} />}
+      {!d && !err && <Slot loading body={t("watch.loading")} h={90} />}
       <div className="top-spots">
         {d?.spots.slice(0, 3).map((s, i) => (
           <div key={s.id} className="top-spot">

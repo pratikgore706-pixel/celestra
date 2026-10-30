@@ -28,6 +28,29 @@ function ThemeSwitch() {
   );
 }
 
+/** Thin progress bar while data loads, plus a note when the free-tier server is waking up. */
+function NetBar() {
+  const { t } = useI18n();
+  const [st, setSt] = useState({ busy: false, slow: false });
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const on = (e: Event) => setSt((e as CustomEvent<{ busy: boolean; slow: boolean }>).detail);
+    window.addEventListener("celestra:net", on);
+    return () => window.removeEventListener("celestra:net", on);
+  }, []);
+  useEffect(() => {
+    if (!st.busy) { setShow(false); return; }
+    const id = setTimeout(() => setShow(true), 150);
+    return () => clearTimeout(id);
+  }, [st.busy]);
+  return (
+    <>
+      <div className={`netbar ${show ? "on" : ""}`} aria-hidden="true"><i /></div>
+      {show && st.slow && <div className="netnote" role="status"><span className="spinner" aria-hidden="true" />{t("net.waking")}</div>}
+    </>
+  );
+}
+
 function ApiStatus() {
   const { t } = useI18n();
   const [s, setS] = useState<"wait" | "ok" | "down">("wait");
@@ -113,6 +136,7 @@ export default function Layout() {
           </div>
         </div>
       </div>
+      <NetBar />
       <OmamoriBanner />
       <main><Outlet /></main>
       <footer className="foot">

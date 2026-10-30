@@ -143,7 +143,7 @@ export default function Lens() {
                 <button aria-pressed={mist} onClick={() => setMist((v) => !v)}>{t("lens.mist")}</button>
               </div>
             )}>
-            {r ? <CompareViewer r={r} overlay={overlay} mist={mist} selected={sel} onSelect={setSel} /> : <Slot body={busy ? t("lens.working") + "…" : t("lens.empty")} h={420} />}
+            {r ? <CompareViewer r={r} overlay={overlay} mist={mist} selected={sel} onSelect={setSel} /> : <Slot loading={!!busy} body={busy ? t("lens.working") + "…" : t("lens.empty")} h={420} />}
             {r?.source?.kind === "skyview" && (
               <p className="small muted" style={{ marginBottom: 0 }}>
                 <span className="chip">{t("arc.label")}</span>{" "}

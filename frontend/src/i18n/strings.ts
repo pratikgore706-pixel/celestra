@@ -344,6 +344,7 @@ const en = {
   "rank.Ashigaru": "Ashigaru",
   "rank.R\u014dnin": "Rōnin",
   "nav.guide": "Guide",
+  "net.waking": "The server is waking up (free hosting sleeps when idle). This can take up to a minute…",
 };
 
 type Dict = typeof en;
@@ -687,6 +688,7 @@ const hi: Dict = {
   "rank.Ashigaru": "आशिगारु",
   "rank.R\u014dnin": "रोनिन",
   "nav.guide": "गाइड",
+  "net.waking": "सर्वर जाग रहा है (मुफ़्त होस्टिंग खाली रहने पर सो जाती है)। इसमें एक मिनट तक लग सकता है…",
 };
 
 const ja: Dict = {
@@ -1027,6 +1029,7 @@ const ja: Dict = {
   "rank.Ashigaru": "足軽",
   "rank.R\u014dnin": "浪人",
   "nav.guide": "手引き",
+  "net.waking": "サーバーを起動しています（無料ホスティングは待機中に休止します）。最大1分ほどかかります…",
 };
 
 
@@ -1364,6 +1367,7 @@ const pa: Dict = {
   "rank.Ashigaru": "ਆਸ਼ੀਗਾਰੂ",
   "rank.R\u014dnin": "ਰੋਨਿਨ",
   "nav.guide": "ਗਾਈਡ",
+  "net.waking": "ਸਰਵਰ ਜਾਗ ਰਿਹਾ ਹੈ (ਮੁਫ਼ਤ ਹੋਸਟਿੰਗ ਵਿਹਲੇ ਸਮੇਂ ਸੌਂ ਜਾਂਦੀ ਹੈ)। ਇਸ ਵਿੱਚ ਇੱਕ ਮਿੰਟ ਤੱਕ ਲੱਗ ਸਕਦਾ ਹੈ…",
 };
 
 export const STRINGS: Record<Lang, Dict> = { en, hi, ja, pa };

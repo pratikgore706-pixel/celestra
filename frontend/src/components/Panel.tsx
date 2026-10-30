@@ -16,11 +16,18 @@ export function Panel({ kj, title, right, children, className = "" }: {
   );
 }
 
-export function Slot({ title, body, h = 140 }: { title?: string; body: string; h?: number }) {
+/** Small spinning ring for anything that is loading. */
+export function Spinner({ label }: { label?: string }) {
+  return <span className="spinner-row" role="status"><span className="spinner" aria-hidden="true" />{label}</span>;
+}
+
+export function Slot({ title, body, h = 140, loading = false }: { title?: string; body: string; h?: number; loading?: boolean }) {
   return (
-    <div className="slot" style={{ minHeight: h }}>
+    <div className={`slot ${loading ? "loading" : ""}`} style={{ minHeight: h }} aria-busy={loading || undefined}>
       <div className="slot-in">
-        {h >= 180 && <Enso size={Math.min(110, h * 0.42)} color="rgba(227,176,75,.28)" />}
+        {loading
+          ? <Enso size={Math.max(46, Math.min(96, h * 0.42))} color="rgba(226,181,78,.85)" />
+          : h >= 180 && <Enso size={Math.min(110, h * 0.42)} color="rgba(227,176,75,.28)" />}
         <div>{title && <b>{title}</b>}{body}</div>
       </div>
     </div>

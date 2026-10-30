@@ -3,7 +3,7 @@ import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-lea
 import "leaflet/dist/leaflet.css";
 import { useI18n } from "../i18n/I18n";
 import Scene from "../components/Scene";
-import { Panel, PageScene } from "../components/Panel";
+import { Panel, PageScene, Spinner } from "../components/Panel";
 import HonorCurve from "../components/HonorCurve";
 import Enso from "../components/Enso";
 import { spotIcon } from "../components/markers";
@@ -195,7 +195,7 @@ export default function Watchtower() {
         {data?.warnings.map((w, i) => <div className="notice" key={i}>{w}</div>)}
 
         <div className="grid g-12">
-          <Panel className="span-8" kj="地図" title={t("watch.map")} right={loading ? <span className="chip">{t("watch.loading")}</span> : null}>
+          <Panel className="span-8" kj="地図" title={t("watch.map")} right={loading ? <Spinner label={t("watch.loading")} /> : null}>
             <div className="map-frame">
               <MapContainer center={[place.lat, place.lon]} zoom={9} style={{ height: 460 }} scrollWheelZoom>
                 <TileLayer
@@ -227,7 +227,7 @@ export default function Watchtower() {
                   </button>
                 </li>
               ))}
-              {!data && !err && <li className="faint small" style={{ padding: 12 }}>{t("watch.loading")}</li>}
+              {!data && !err && <li className="faint small" style={{ padding: 12 }}><Spinner label={t("watch.loading")} /></li>}
             </ol>
           </Panel>
           {selected && <SpotDetail spot={selected} meta={meta} />}
