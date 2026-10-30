@@ -70,6 +70,17 @@ Open http://localhost:8000. The `/data` volume keeps the database, caches and im
 The image works on any container host (Hugging Face Spaces, Render, Railway, Fly.io, Google Cloud Run, a VM).
 It listens on `$PORT` (7860 by default) and runs as an unprivileged user.
 
+### Free option: Vercel (website) + Render (API)
+
+1. **Render** → New → Blueprint → pick this repo. `render.yaml` creates `celestra-api` (free, Python).
+   Note its URL, e.g. `https://celestra-api.onrender.com`.
+2. **Vercel** → Add New Project → this repo → Root Directory `frontend` (framework Vite).
+   Add the environment variable `VITE_API_BASE` = your Render URL, then Deploy.
+3. Back on Render, set `CELESTRA_CORS_ORIGINS` = your Vercel URL (e.g. `https://celestra.vercel.app`) and redeploy.
+
+The free Render service sleeps after 15 minutes without visitors (first request then takes about a minute)
+and has 512 MB of memory, so large Spirit Lens images may be slow or fail; the sample field works.
+
 ### Option B: a plain server
 
 ```bash

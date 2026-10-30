@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useI18n } from "../i18n/I18n";
-import { api } from "../api/client";
+import { api, apiUrl } from "../api/client";
 import type { BlinkResult } from "../api/types";
 import { Panel, Slot } from "./Panel";
 
@@ -46,7 +46,7 @@ export default function BlinkPanel() {
           {res && img ? (
             <>
               <div className="blink-view" style={{ aspectRatio: `${res.width} / ${res.height}` }}>
-                <img src={img} alt="" draggable={false} />
+                <img src={apiUrl(img)} alt="" draggable={false} />
                 <svg viewBox={`0 0 ${res.width} ${res.height}`} preserveAspectRatio="none">
                   {res.candidates.map((c, i) => (
                     <g key={i} onClick={() => setSel(i)} style={{ cursor: "pointer" }}>

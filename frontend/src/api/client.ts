@@ -1,5 +1,8 @@
 // Empty base = same origin; Vite proxies /api to the backend (see vite.config.ts).
-export const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+export const API_BASE = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+
+/** Full URL for a backend path (images, downloads) when the API lives on another domain. */
+export const apiUrl = (path: string) => (path.startsWith("/api") ? `${API_BASE}${path}` : path);
 
 export type Meta = {
   source: string;

@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, type PointerEvent, type WheelEvent } from "react";
 import type { LensResult, Source } from "../api/types";
 import { useI18n } from "../i18n/I18n";
+import { apiUrl } from "../api/client";
 
 /**
  * Before/after viewer. Both images and the overlay share one transform, so zoom and pan
@@ -62,9 +63,9 @@ export default function CompareViewer({ r, overlay, mist, selected, onSelect, ma
         role="slider" aria-label="Compare original and restored" aria-valuenow={Math.round(split * 100)} aria-valuemin={0} aria-valuemax={100} tabIndex={0}
         onKeyDown={(e) => { if (e.key === "ArrowLeft") setSplit((s) => Math.max(0, s - 0.05)); if (e.key === "ArrowRight") setSplit((s) => Math.min(1, s + 0.05)); }}
       >
-        <div className="cv-layer" style={tf}><img src={r.files.original} alt={t("lens.orig")} draggable={false} /></div>
+        <div className="cv-layer" style={tf}><img src={apiUrl(r.files.original)} alt={t("lens.orig")} draggable={false} /></div>
         <div className="cv-clip" style={{ clipPath: `inset(0 0 0 ${split * 100}%)` }}>
-          <div className="cv-layer" style={tf}><img src={right} alt={mist ? t("lens.mistlabel") : t("lens.rest")} draggable={false} /></div>
+          <div className="cv-layer" style={tf}><img src={apiUrl(right)} alt={mist ? t("lens.mistlabel") : t("lens.rest")} draggable={false} /></div>
         </div>
         <div className="cv-layer" style={{ ...tf, pointerEvents: "none" }}>
           <svg viewBox={`0 0 ${r.width} ${r.height}`} preserveAspectRatio="none" className="cv-svg">

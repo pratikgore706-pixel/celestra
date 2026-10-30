@@ -5,7 +5,7 @@ import { Panel, Slot, PageScene } from "../components/Panel";
 import CompareViewer from "../components/CompareViewer";
 import SealPanel from "../components/SealPanel";
 import BlinkPanel from "../components/BlinkPanel";
-import { api } from "../api/client";
+import { api, apiUrl } from "../api/client";
 import type { LensJob, LensResult, Source } from "../api/types";
 
 const LAST = "celestra.lastJob";
@@ -170,8 +170,8 @@ export default function Lens() {
                   </div>
                   <div className="row" style={{ marginTop: 10 }}>
                     <span className="eyebrow">{t("lens.export")}</span>
-                    <a className="btn ghost sm" href={`/api/lens/jobs/${r.id}/catalog.csv`}>CSV</a>
-                    <a className="btn ghost sm" href={`/api/lens/files/${r.id}/result.json`} target="_blank" rel="noreferrer">JSON</a>
+                    <a className="btn ghost sm" href={apiUrl(`/api/lens/jobs/${r.id}/catalog.csv`)}>CSV</a>
+                    <a className="btn ghost sm" href={apiUrl(`/api/lens/files/${r.id}/result.json`)} target="_blank" rel="noreferrer">JSON</a>
                     <a className="btn ghost sm" href={r.files.restored} download={`celestra_${r.id}_restored.png`}>PNG</a>
                   </div>
                 </>
