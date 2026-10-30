@@ -372,3 +372,26 @@ footer.foot { border-top: 1px solid var(--rule); background: none; }
   .netbar.on i { animation: none; width: 100%; left: 0; opacity: .7; }
   .spinner, .slot.loading .enso svg { animation-duration: 3s; }
 }
+
+/* ---------- fit to screen: wider on big screens, compact on short (laptop / scaled) screens ---------- */
+:root { --wrap: min(1560px, 100%); }
+.page, .topbar-in, .scene-text, .omamori-in, footer.foot div { max-width: var(--wrap); }
+.scene svg.art { height: clamp(120px, 21vh, 200px); }
+.scene-text { padding-bottom: clamp(18px, 3.4vh, 40px); }
+.scene-text h1 { font-size: clamp(26px, min(3.4vw, 5.2vh), 46px); }
+.scene-text p { font-size: clamp(13px, 1.7vh, 14.5px); max-width: 72ch; }
+.scene-kanji { font-size: clamp(70px, min(11vw, 17vh), 170px); }
+.grid { margin-top: clamp(14px, 2.4vh, 24px); gap: clamp(12px, 1.6vh, 16px); }
+
+@media (max-height: 820px) and (min-width: 701px) {
+  .topbar-in { height: 52px; }
+  .omamori-in { padding-top: 5px; padding-bottom: 5px; }
+  .panel { padding: 16px 18px; }
+  .panel-h { margin-bottom: 10px; }
+  .panel-h h2 { font-size: 16px; }
+  .hanko-kj { min-width: 26px; height: 26px; font-size: 12.5px; }
+  .enso .stat { font-size: 40px; }
+  .map-frame .leaflet-container { height: min(380px, 48vh) !important; }
+  .rank { max-height: calc(min(380px, 48vh) + 4px); }
+  .cal-d { min-height: 64px; }
+}
