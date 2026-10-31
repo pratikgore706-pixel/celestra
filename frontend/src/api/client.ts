@@ -43,14 +43,20 @@ setInterval(() => { if (inflight > 0) emit(); }, 1000);
 /* ---------- response cache: data stays for a while, so moving between pages is instant ---------- */
 const TTL: [RegExp, number][] = [
   [/^\/api\/sky\/moon/, 5 * 60_000],
-  [/^\/api\/(watchtower|score|sky\/month|sky\/upcoming|sky\/iss|sky\/launches|geocode)/, 15 * 60_000],
+  [/^\/api\/(watchtower|score)/, 15 * 60_000],
+  [/^\/api\/(sky\/month|sky\/upcoming|sky\/iss|sky\/launches)/, 60 * 60_000],
+  [/^\/api\/geocode/, 7 * 24 * 3600_000],
 ];
 const cache = new Map<string, { at: number; ttl: number; value: unknown }>();
 const pending = new Map<string, Promise<unknown>>();
 const ttlFor = (path: string) => TTL.find(([re]) => re.test(path))?.[1] ?? 0;
-const STORE_KEY = "celestra.cache.v1";
+// Kept across visits (localStorage). Expired answers are still shown instantly for a while
+// ("stale"), and refreshed in the background, so a sleeping server never means a blank page.
+const STALE_MS = 6 * 3600_000;
+const STORE_KEY = "celestra.cache.v2";
 try {
-  const saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || "{}");
+  sessionStorage.removeItem("celestra.cache.v1");
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
   for (const [k, v] of Object.entries(saved)) cache.set(k, v as { at: number; ttl: number; value: unknown });
 } catch { /* storage unavailable */ }
 let saveTimer = 0;
@@ -60,8 +66,8 @@ function persist() {
     try {
       const now = Date.now();
       const obj: Record<string, unknown> = {};
-      for (const [k, v] of cache) if (now - v.at < v.ttl) obj[k] = v;
-      sessionStorage.setItem(STORE_KEY, JSON.stringify(obj));
+      for (const [k, v] of cache) if (now - v.at < v.ttl + STALE_MS) obj[k] = v;
+      localStorage.setItem(STORE_KEY, JSON.stringify(obj));
     } catch { /* quota or unavailable */ }
   }, 400);
 }
@@ -95,12 +101,20 @@ export async function api<T>(path: string, init?: RequestInit): Promise<Envelope
   const ttl = method === "GET" ? ttlFor(path) : 0;
   if (!ttl) return load<T>(path, init);
   const hit = cache.get(path);
-  if (hit && Date.now() - hit.at < hit.ttl) return hit.value as Envelope<T>;
-  const same = pending.get(path);
-  if (same) return same as Promise<Envelope<T>>;
-  const p = load<T>(path, init)
-    .then((v) => { if (v?.meta?.status !== "demo") { cache.set(path, { at: Date.now(), ttl, value: v }); persist(); } return v; })
-    .finally(() => pending.delete(path));
-  pending.set(path, p);
-  return p;
+  const age = hit ? Date.now() - hit.at : Infinity;
+  if (hit && age < hit.ttl) return hit.value as Envelope<T>;
+  const fetchFresh = () => {
+    const same = pending.get(path);
+    if (same) return same as Promise<Envelope<T>>;
+    const p = load<T>(path, init)
+      .then((v) => { if (v?.meta?.status !== "demo") { cache.set(path, { at: Date.now(), ttl, value: v }); persist(); } return v; })
+      .finally(() => pending.delete(path));
+    pending.set(path, p);
+    return p;
+  };
+  if (hit && age < hit.ttl + STALE_MS) {
+    fetchFresh().catch(() => { /* keep showing the saved answer */ });
+    return hit.value as Envelope<T>;
+  }
+  return fetchFresh();
 }

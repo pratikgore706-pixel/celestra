@@ -15,8 +15,12 @@ from .routers import honor, lens, scroll, watchtower
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import asyncio
+    from .warm import warm_async
     init_db()
+    task = asyncio.create_task(warm_async())  # background: the server answers immediately
     yield
+    task.cancel()
 
 
 app = FastAPI(title="Celestra API", version="1.0.0", lifespan=lifespan)

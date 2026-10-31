@@ -96,18 +96,19 @@ function ComingUp() {
   const { place } = usePlace();
   const [evs, setEvs] = useState<SkyEvent[] | null>(null);
   useEffect(() => {
-    Promise.allSettled([
-      api<SkyEvent[]>(`/api/sky/upcoming?lat=${place.lat}&lon=${place.lon}`),
-      api<{ passes: IssPass[] }>(`/api/sky/iss?lat=${place.lat}&lon=${place.lon}`),
-    ]).then(([a, b]) => {
-      const list: SkyEvent[] = a.status === "fulfilled" ? a.value.data.filter((e) => e.visible !== false) : [];
-      if (b.status === "fulfilled" && b.value.data.passes[0]) {
-        const p = b.value.data.passes[0];
-        list.push({ id: "iss", type: "iss", title: `ISS · ${p.start_dir} → ${p.end_dir}, ${p.max_alt}°`, start: p.start, visible: true, detail: {}, source: "", url: "", status: "computed" });
-      }
-      list.sort((x, y) => x.start.localeCompare(y.start));
-      setEvs(list.slice(0, 4));
-    });
+    // show the computed events as soon as they arrive; add the ISS pass when it lands
+    let base: SkyEvent[] = [], issEv: SkyEvent | null = null, alive = true;
+    const show = () => alive && setEvs([...base, ...(issEv ? [issEv] : [])].sort((x, y) => x.start.localeCompare(y.start)).slice(0, 4));
+    api<SkyEvent[]>(`/api/sky/upcoming?lat=${place.lat}&lon=${place.lon}`)
+      .then((r) => { base = r.data.filter((e) => e.visible !== false); show(); })
+      .catch(() => show());
+    api<{ passes: IssPass[] }>(`/api/sky/iss?lat=${place.lat}&lon=${place.lon}`).then((r) => {
+      const p = r.data.passes[0];
+      if (!p) return;
+      issEv = { id: "iss", type: "iss", title: `ISS · ${p.start_dir} → ${p.end_dir}, ${p.max_alt}°`, start: p.start, visible: true, detail: {}, source: "", url: "", status: "computed" };
+      show();
+    }).catch(() => { /* ISS is optional here */ });
+    return () => { alive = false; };
   }, [place.lat, place.lon]);
   return (
     <Panel className="span-4" title={t("dojo.next")}>
