@@ -67,8 +67,25 @@ export type Alert = { id: number; event_id: string; kind: string; title: string;
 export type Source = {
   id: number; x: number; y: number; flux: number; inst_mag: number; snr: number; fwhm: number;
   area: number; ellipticity: number; orientation: number; saturated: boolean; class: "star" | "extended";
+  kind?: Kind; a?: number | null; pair?: number;
   ra?: number; dec?: number; size_arcsec?: number;
   gaia_id?: string; g_mag?: number; bp_rp?: number; match_arcsec?: number;
+};
+export type Kind = "star" | "bright_star" | "fuzzy" | "galaxy" | "nebula" | "trail";
+export type KnownObject = { id: string; name: string; type: string; x: number; y: number; r: number; size_arcmin: number; dist_ly: number; inside: boolean };
+export type DiagItem = { key: string; value: number; grade: number; unit?: string; arcsec?: number | null; coherence?: number; cause?: string | null; angle?: number; toward?: string | null; trails?: number };
+export type LensAnalysis = {
+  kinds: Record<string, number>; total_detected: number; density: number; seconds: number;
+  regions: { x: number; y: number; a: number; b: number; angle: number; kind: "band" | "nebula"; area_pct: number; strength: number }[];
+  clusters: { x: number; y: number; r: number; n: number; density: number }[];
+  trails: { x0: number; y0: number; x1: number; y1: number; length: number; pieces: number }[];
+  field: { constellation: string; ra: number; dec: number; fov_arcmin: [number, number]; arcsec_per_px: number; objects: KnownObject[] } | null;
+  repairs: {
+    hot_pixels: { n: number; pts: number[][]; enabled: boolean; note: string | null };
+    glow: { pct: number; toward: string | null; flattened: boolean; enabled: boolean };
+    noise: { before: number; after: number; factor: number }; denoise: number; deblur_iters: number;
+  };
+  diagnosis: { score: number; items: DiagItem[] };
 };
 export type SealCheck = { key: string; pass: boolean; value: number; rule: string; range?: number[]; blobs?: number; n?: number };
 export type LensResult = {
@@ -84,6 +101,7 @@ export type LensResult = {
   files: { original: string; restored: string; mist: string }; seconds: number;
   gaia?: { requested: boolean; matched: number; error: string | null };
   source?: { kind: string; target: string; survey: string; url: string } | null;
+  analysis?: LensAnalysis;
 };
 export type LensJob = { id: string; status: "queued" | "running" | "done" | "error"; step: string | null; progress: number; error: string | null; result: LensResult | null };
 

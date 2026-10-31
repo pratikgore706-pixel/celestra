@@ -51,10 +51,11 @@ def detect(lum: np.ndarray, bkg: np.ndarray, rms: float, nsigma: float = 5.0, np
             area = float(s.area.value)
             peak = float(s.max_value) + float(bkg[int(round(y)), int(round(x))])
             orient = float(s.orientation.value) if s.orientation is not None else 0.0
+            semi_a = float(s.semimajor_sigma.value)
             rows.append({
                 "x": round(x, 2), "y": round(y, 2), "flux": flux, "fwhm": round(fwhm, 2),
                 "ellipticity": round(ell, 3), "area": round(area, 1), "peak": peak,
-                "orientation": round(orient, 1),
+                "orientation": round(orient, 1), "a": round(semi_a, 2),
                 "saturated": peak >= 0.98 * peak_all,
             })
         except Exception:

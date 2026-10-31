@@ -10,6 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
+from . import analyze as A
 from . import detect as D
 from . import imageio as io
 from . import restore as R
@@ -21,7 +22,7 @@ STORAGE.mkdir(parents=True, exist_ok=True)
 JOBS: dict[str, dict] = {}
 _lock = threading.Lock()
 
-STEPS = ["load", "noise", "detect", "denoise", "psf", "deblur", "seal", "classify", "export"]
+STEPS = ["load", "noise", "detect", "psf", "repair", "denoise", "deblur", "seal", "classify", "analyze", "export"]
 
 
 def new_job(name: str, opts: dict) -> str:
@@ -85,10 +86,12 @@ def run(jid: str, data: bytes | None = None, fetch=None) -> None:
             _set(jid, status="running", step="fetch", progress=2)
             data = fetch()
         arr, info = io.load(data)
+        raw = arr  # what the user uploaded, shown as "Original"
         lum = io.luminance(arr)
 
         step("noise")
         bkg, rms = D.background(lum)
+
 
         step("detect")
         cat_o = D.detect(lum, bkg, rms, limit=D.FULL)  # full list for the Seal; UI shows the brightest 600
@@ -97,6 +100,16 @@ def run(jid: str, data: bytes | None = None, fetch=None) -> None:
         psf, psf_fwhm, n_psf = D.measure_psf(lum - bkg, cat_o)
         fwhm_ref = psf_fwhm or (float(np.median([s["fwhm"] for s in cat_o])) if cat_o else 3.0)
         D.classify(cat_o, psf_fwhm)
+
+        step("repair")
+        hot_pts: list = []
+        hot_note = None
+        if opts.get("hot_pixels", True):
+            arr, hot_pts, hot_note = A.hot_pixels(arr, lum, rms, psf_fwhm)
+            if hot_pts:  # re-detect on the repaired frame so spikes are not counted as stars
+                lum = io.luminance(arr)
+                cat_o = D.detect(lum, bkg, rms, limit=D.FULL)
+                D.classify(cat_o, psf_fwhm)
 
         strength = max(0, min(100, int(opts.get("strength", 85)))) / 100
         want_deblur = bool(opts.get("deblur", True)) and psf is not None
@@ -139,9 +152,36 @@ def run(jid: str, data: bytes | None = None, fetch=None) -> None:
         D.classify(cat_r, psf_fwhm)
         resid = (lum - rest_lum) / rms
 
-        step("export")
+        step("analyze")
         lo, hi = io.stretch_params(lum, float(np.median(bkg)))
-        io.to_png(lum if arr.ndim == 2 else arr, lo, hi, out / "original.png") if arr.ndim == 2 else _rgb_png(arr, lo, hi, out / "original.png")
+        h_img, w_img = lum.shape
+        t_an = time.time()
+        glow = A.sky_glow(bkg, lo, hi)
+        flattened = bool(opts.get("flatten", True)) and glow["pct"] >= 2.0
+        if flattened:
+            rest = A.flatten(rest, glow["model"])
+        regions = A.diffuse_regions(glow["residual"], rms)
+        field = A.identify(info, lum.shape)
+        trails = A.kinds(cat_o, psf_fwhm, lum.shape, rms, regions, field["objects"] if field else None)
+        stars_all = [x for x in cat_o if x["kind"] in ("star", "bright_star", "fuzzy")]
+        groups = A.clusters(stars_all, lum.shape)
+        sky_px = R.star_mask(lum.shape, cat_o, fwhm_ref) < 0.02
+        noise = A.noise_after(lum, rest_lum, bkg, sky_px)
+        n_trails = len(trails)
+        diag = A.diagnose(cat_o, psf_fwhm, rms, lo, hi, glow, len(hot_pts), n_trails, field["arcsec_per_px"] if field else None)
+        kind_counts: dict[str, int] = {}
+        for x in cat_o:
+            kind_counts[x["kind"]] = kind_counts.get(x["kind"], 0) + 1
+        kind_counts["double"] = sum(1 for x in cat_o if x.get("pair")) // 2
+        kind_counts["trail"] = n_trails
+        kind_counts["cluster"] = len(groups)
+        kind_counts["region"] = len(regions)
+
+        step("export")
+        if raw.ndim == 2:
+            io.to_png(raw, lo, hi, out / "original.png")
+        else:
+            _rgb_png(raw, lo, hi, out / "original.png")
         if rest.ndim == 2:
             io.to_png(rest, lo, hi, out / "restored.png")
         else:
@@ -150,7 +190,11 @@ def run(jid: str, data: bytes | None = None, fetch=None) -> None:
 
         sources = []
         for s in cat_o[: D.MAX_SOURCES]:
-            sources.append({k: s[k] for k in ("id", "x", "y", "flux", "inst_mag", "snr", "fwhm", "area", "ellipticity", "orientation", "saturated", "class")})
+            row = {k: s[k] for k in ("id", "x", "y", "flux", "inst_mag", "snr", "fwhm", "area", "ellipticity", "orientation", "saturated", "class", "kind")}
+            row["a"] = s.get("a")
+            if s.get("pair"):
+                row["pair"] = s["pair"]
+            sources.append(row)
         _add_sky_coords(sources, info, psf_fwhm)
         gaia = {"requested": bool(opts.get("gaia")), "matched": 0, "error": None}
         if opts.get("gaia") and any("ra" in x for x in sources):
@@ -177,6 +221,22 @@ def run(jid: str, data: bytes | None = None, fetch=None) -> None:
             "fake_star": fake,
             "sources": sources,
             "counts": {"stars": sum(s["class"] == "star" for s in sources), "extended": sum(s["class"] == "extended" for s in sources)},
+            "analysis": {
+                "kinds": kind_counts,
+                "total_detected": len(cat_o),
+                "density": round(len(cat_o) / (h_img * w_img) * 1e4, 1),
+                "regions": regions,
+                "clusters": groups,
+                "trails": trails,
+                "field": field,
+                "seconds": round(time.time() - t_an, 2),
+                "repairs": {"hot_pixels": {"n": len(hot_pts), "pts": hot_pts, "enabled": bool(opts.get("hot_pixels", True)), "note": hot_note},
+                            "glow": {"pct": glow["pct"], "toward": glow["toward"], "flattened": flattened,
+                                     "enabled": bool(opts.get("flatten", True))},
+                            "noise": noise,
+                            "denoise": attempts[-1]["strength"], "deblur_iters": attempts[-1]["deblur_iters"]},
+                "diagnosis": diag,
+            },
             "files": {"original": f"/api/lens/files/{jid}/original.png", "restored": f"/api/lens/files/{jid}/restored.png",
                       "mist": f"/api/lens/files/{jid}/mist.png"},
             "gaia": gaia,

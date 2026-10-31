@@ -1,0 +1,152 @@
+/* =================== Landing: scroll story (mission theme) ===================
+   Layers: rolling night sky → horizon glow → shooting stars → mountains → explorer on the rock.
+   Driven by CSS variables written from Landing.tsx: --p, --rot, --gscale, --mtn, --rib, --ribs, --scene. */
+.lp { position: relative; background: #03060f; --bar: 68px; }
+/* the scene is pinned to the screen below the top bar; scrolling only drives the animation */
+.lp-stage { position: fixed; left: 0; right: 0; top: var(--bar); bottom: 0; height: auto; overflow: hidden; isolation: isolate; z-index: 1;
+  --p: 0; --day: 1; --moonlit: 0; --rot: 25deg; --sx: 46%; --sy: 20%; --mx: 54%; --my: 196%; --gscale: 1.05; --mtn: 0vh; --rib: 0deg; --ribs: 1; --scene: 1.06; }
+
+/* sky: one square texture, rolled around a point above the horizon */
+.lp-sky { position: absolute; left: 50%; top: 88%; width: max(150vmax, 200vh); aspect-ratio: 1; z-index: 0;
+  transform: translate(-50%, -50%) rotate(var(--rot)) scale(var(--gscale)); will-change: transform; }
+.lp-sky img { width: 100%; height: 100%; display: block; object-fit: cover; filter: saturate(1.1); }
+.lp-glow { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(80% 30% at 50% 78%, rgba(91, 140, 255, .22), transparent 70%),
+              linear-gradient(180deg, rgba(3, 6, 15, .5) 0%, transparent 20%); }
+
+/* shooting stars */
+.lp-shoot { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.lp-shoot i { position: absolute; width: 170px; height: 1.5px; border-radius: 2px; opacity: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), #fff); transform: rotate(-28deg);
+  filter: drop-shadow(0 0 6px rgba(140, 190, 255, .9)); animation: lp-shoot 9s linear infinite; }
+.lp-shoot i:nth-child(1) { top: 14%; left: 58%; animation-delay: 1.5s; }
+.lp-shoot i:nth-child(2) { top: 28%; left: 82%; animation-delay: 5.2s; animation-duration: 11s; }
+.lp-shoot i:nth-child(3) { top: 8%; left: 30%; animation-delay: 8s; animation-duration: 13s; }
+@keyframes lp-shoot {
+  0% { opacity: 0; transform: rotate(-28deg) translateX(0); }
+  2% { opacity: 1; }
+  7% { opacity: 0; transform: rotate(-28deg) translateX(-320px); }
+  100% { opacity: 0; transform: rotate(-28deg) translateX(-320px); }
+}
+
+/* mountains: sink a little as you scroll, as if you are tilting your head up */
+.lp-mtn { position: absolute; left: 50%; bottom: -3vh; width: max(100vw, 160vh); aspect-ratio: 2076 / 758; z-index: 2;
+  transform: translate(-50%, var(--mtn)); will-change: transform; }
+.lp-mtn img { width: 100%; height: 100%; display: block; user-select: none;
+  filter: brightness(calc(1 + var(--day) * .35)) sepia(calc(var(--day) * .35)) saturate(calc(1 + var(--day) * .4)) hue-rotate(calc(var(--day) * -12deg)); }
+/* warm low sun at the start of the scroll, fading into night */
+.lp-dusk { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: var(--day);
+  background: radial-gradient(22% 30% at 1% 33%, rgba(255, 236, 160, .55), rgba(255, 190, 90, .18) 45%, transparent 75%),
+              radial-gradient(70% 45% at 8% 82%, rgba(255, 170, 80, .35), transparent 70%),
+              linear-gradient(0deg, rgba(255, 140, 70, .16) 0%, transparent 40%); mix-blend-mode: screen; }
+
+/* the explorer on the rock (left of centre, like a cover shot) */
+.lp-scene { position: absolute; left: 1vw; bottom: -1vh; height: min(57vh, 50vw); aspect-ratio: 1341 / 866; z-index: 3;
+  transform: scale(var(--scene)); transform-origin: 40% 100%; will-change: transform; }
+.lp-scene img, .lp-rib { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.lp-boy { filter: drop-shadow(0 0 30px rgba(91, 140, 255, .18)); }
+.lp-rib { transform: rotate(var(--rib)) scaleX(var(--ribs)); will-change: transform; }
+.lp-rib img { animation: lp-flutter 2.6s ease-in-out infinite; }
+@keyframes lp-flutter { 0%, 100% { transform: skewY(0deg) rotate(0deg); } 50% { transform: skewY(-3deg) rotate(-2deg) translateY(-2px); } }
+
+.lp-shade { position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  background: linear-gradient(90deg, rgba(3, 6, 15, calc(.62 - var(--day) * .4)) 0%, rgba(3, 6, 15, .1) 30%, transparent 50%, rgba(3, 6, 15, .55) 72%, rgba(3, 6, 15, .78) 100%),
+              linear-gradient(0deg, rgba(3, 6, 15, .55) 0%, transparent 22%); }
+
+/* left mark */
+.lp-brand { position: absolute; z-index: 5; left: max(32px, 5vw); top: clamp(24px, 7vh, 96px); width: min(40vw, 560px); }
+.lp-kicker { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 12px; border-radius: 999px;
+  border: 1px solid rgba(139, 186, 255, .3); background: rgba(91, 156, 255, .08); backdrop-filter: blur(6px);
+  font: 500 11px/1 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: #a9c8ff; animation: lp-in 1s .05s both; }
+.lp-pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: #3ddc97; }
+.lp-pulse::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid #3ddc97; animation: lp-ping 2s ease-out infinite; }
+@keyframes lp-ping { from { transform: scale(.6); opacity: 1; } to { transform: scale(2.2); opacity: 0; } }
+.lp-name { margin: 22px 0 0; font-family: var(--f-display); font-weight: 300; line-height: .95; white-space: nowrap;
+  font-size: clamp(44px, 5.6vw, 100px); letter-spacing: .14em; display: flex; }
+.lp-name span { display: inline-block; background: linear-gradient(180deg, #ffffff 0%, #dfe8ff 45%, #7fa8ff 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 0 40px rgba(120, 160, 255, .25); animation: lp-letter 1.1s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes lp-letter { from { opacity: 0; transform: translateY(40px); filter: blur(10px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes lp-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.lp-stroke { display: block; width: 88%; height: 22px; margin: 12px 0 16px; overflow: visible; }
+.lp-stroke path { fill: none; stroke: url(#lpStroke); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 460; stroke-dashoffset: 460;
+  animation: lp-draw 1.4s .9s cubic-bezier(.6, .1, .2, 1) forwards; filter: drop-shadow(0 0 8px rgba(91, 156, 255, .7)); }
+@keyframes lp-draw { to { stroke-dashoffset: 0; } }
+.lp-tag { margin: 0; font-size: clamp(15px, 1.3vw, 19px); font-weight: 300; color: #c8d4ee; letter-spacing: .04em; animation: lp-in 1s 1.2s both; }
+
+/* right story */
+.lp-story { position: absolute; z-index: 5; right: max(56px, 6vw); top: 50%; transform: translateY(-50%); width: min(34vw, 470px); min-height: 380px; }
+.lp-ch { position: absolute; inset: 0 0 auto 0; top: 50%; margin-top: -180px; opacity: 0; will-change: opacity, transform; }
+.lp-ch:first-child { opacity: 1; }
+.lp-ch-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.lp-ch-ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #8bbaff;
+  background: rgba(91, 156, 255, .12); border: 1px solid rgba(139, 186, 255, .35); box-shadow: 0 0 18px rgba(91, 156, 255, .25); }
+.lp-ch-n { font: 500 12px var(--f-mono); color: #8d9bbd; letter-spacing: .14em; }
+.lp-eyebrow { font: 500 12px var(--f-mono); letter-spacing: .18em; text-transform: uppercase; color: #8bbaff; margin-bottom: 12px; }
+.lp-ch h2 { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 2.6vw, 40px); line-height: 1.12; letter-spacing: -.015em;
+  margin: 0 0 14px; color: #fff; text-shadow: 0 2px 24px rgba(3, 6, 15, .6); }
+.lp-ch p { margin: 0; font-size: clamp(14.5px, 1.1vw, 16.5px); line-height: 1.7; color: #c8d1e6; max-width: 46ch; text-shadow: 0 1px 12px rgba(3, 6, 15, .7); }
+.lp-stats { display: flex; gap: 28px; margin: 22px 0 0; }
+.lp-stats div { display: grid; gap: 2px; }
+.lp-stats dt { font-family: var(--f-display); font-weight: 300; font-size: 38px; color: #fff; line-height: 1; }
+.lp-stats dt::after { content: ""; display: block; width: 18px; height: 2px; background: linear-gradient(90deg, #5b9cff, #a78bff); margin-top: 8px; }
+.lp-stats dd { margin: 0; font-size: 12.5px; color: #9aa7c4; }
+.lp-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.lp-cta .btn { padding: 12px 22px; font-size: 15px; text-decoration: none; border-radius: 999px; }
+.lp-cta .btn:not(.ghost) { box-shadow: 0 10px 30px -8px rgba(91, 156, 255, .8); }
+.lp-cta .btn.ghost { background: rgba(3, 6, 15, .45); backdrop-filter: blur(6px); }
+
+/* chapter rail + scroll cue */
+.lp-rail { position: absolute; z-index: 6; right: max(18px, 2vw); top: 50%; transform: translateY(-50%); display: grid; gap: 14px; }
+.lp-rail button { width: 22px; height: 22px; display: grid; place-items: center; background: none; border: 0; cursor: pointer; padding: 0; }
+.lp-rail i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .3); transition: all .3s; }
+.lp-rail button[data-on="past"] i { background: rgba(91, 156, 255, .6); }
+.lp-rail button[data-on="1"] i { width: 8px; height: 20px; border-radius: 4px; background: #5b9cff; box-shadow: 0 0 12px rgba(91, 156, 255, .8); }
+.lp-rail button:focus-visible { outline: 2px solid #fff; border-radius: 50%; }
+.lp-cue { position: absolute; z-index: 6; left: 50%; bottom: 22px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px;
+  font: 500 10.5px var(--f-mono); letter-spacing: .24em; text-transform: uppercase; color: #aab6d4; opacity: calc(1 - var(--p) * 8); }
+.lp-cue i { width: 1px; height: 34px; background: linear-gradient(180deg, #fff, transparent); animation: lp-cue 1.8s ease-in-out infinite; transform-origin: top; }
+@keyframes lp-cue { 0% { transform: scaleY(0); opacity: 1; } 70% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* the top bar floats over the sky on the landing page */
+.shell:has(.lp) .omamori, .shell:has(.lp) footer.foot { display: none; }
+.shell:has(.lp) .topbar { position: fixed; left: 0; right: 0; top: 0; z-index: 30; }
+
+@media (max-width: 860px) {
+  .lp-brand { top: 3%; left: 20px; right: 20px; width: auto; }
+  .lp-name { font-size: clamp(38px, 11vw, 64px); }
+  .lp-stroke { width: 70%; }
+  .lp-story { left: 20px; right: 20px; top: auto; bottom: 28px; transform: none; width: auto; min-height: 300px; }
+  .lp-ch { top: auto; bottom: 0; margin-top: 0; }
+  .lp-ch h2 { font-size: 24px; }
+  .lp-ch p { font-size: 14px; }
+  .lp-scene { left: 50%; bottom: 38%; height: 30%; transform: translateX(-50%) scale(var(--scene)); transform-origin: 50% 100%; }
+  .lp-mtn { width: max(100vw, 170vh); bottom: 30%; }
+  .lp-sky { left: 78%; top: 80%; }
+  .lp-shade { background: linear-gradient(180deg, rgba(3, 6, 15, .6) 0%, transparent 30%, transparent 45%, rgba(3, 6, 15, .95) 68%); }
+  .lp-rail { right: 8px; top: 30%; }
+  .lp-cue { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-name span, .lp-kicker, .lp-tag, .lp-rib img, .lp-cue i, .lp-shoot i, .lp-pulse::after { animation: none; }
+  .lp-stroke path { animation: none; stroke-dashoffset: 0; }
+}
+html[lang="hi"] .lp :is(.lp-kicker, .lp-eyebrow, .lp-cue), html[lang="pa"] .lp :is(.lp-kicker, .lp-eyebrow, .lp-cue) { letter-spacing: .02em; font-family: var(--f-body); font-size: 13px; }
+/* keep the mark readable against the low sun */
+.lp-tag { text-shadow: 0 1px 2px rgba(3, 6, 15, .6), 0 2px 18px rgba(3, 6, 15, .75); color: #fff; }
+.lp-name span { filter: drop-shadow(0 2px 14px rgba(3, 6, 15, .45)); }
+.lp-kicker { background: rgba(3, 6, 15, .45); }
+
+/* ---------- Sun and Moon on one arc (positions from Landing.tsx) ---------- */
+.lp-sun, .lp-moon { position: absolute; z-index: 1; pointer-events: none; will-change: left, top; }
+.lp-sun { width: clamp(70px, 8vw, 140px); aspect-ratio: 1; left: var(--sx); top: var(--sy); transform: translate(-50%, -50%); }
+.lp-sun::before { content: ""; position: absolute; inset: -260%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 120, .55) 0%, rgba(255, 170, 70, .22) 22%, rgba(255, 140, 60, .08) 45%, transparent 70%); }
+.lp-sun i { position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 45% 42%, #fffdf2 0%, #fff3b8 38%, #ffd36b 72%, #ffb347 100%);
+  box-shadow: 0 0 40px 12px rgba(255, 220, 130, .75), 0 0 120px 40px rgba(255, 170, 70, .45); }
+.lp-moon { width: clamp(66px, 7.2vw, 128px); aspect-ratio: 1; left: var(--mx); top: var(--my); transform: translate(-50%, -50%); }
+.lp-moon::before { content: ""; position: absolute; inset: -140%; border-radius: 50%; opacity: calc(.4 + var(--moonlit) * .6);
+  background: radial-gradient(circle, rgba(200, 215, 255, .32) 0%, rgba(140, 170, 255, .12) 30%, transparent 62%); }
+.lp-moon img { position: relative; width: 100%; height: 100%; display: block;
+  filter: drop-shadow(0 0 18px rgba(210, 225, 255, .75)) drop-shadow(0 0 50px rgba(150, 180, 255, .45)); }

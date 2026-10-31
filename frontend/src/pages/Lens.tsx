@@ -2,7 +2,9 @@ import { useEffect, useRef, useState, type DragEvent } from "react";
 import { useI18n } from "../i18n/I18n";
 import Scene from "../components/Scene";
 import { Panel, Slot, PageScene } from "../components/Panel";
-import CompareViewer from "../components/CompareViewer";
+import CompareViewer, { DEFAULT_LAYERS, KIND_COLOR, kindOf } from "../components/CompareViewer";
+import SkyReport from "../components/SkyReport";
+import type { Key } from "../i18n/strings";
 import SealPanel from "../components/SealPanel";
 import BlinkPanel from "../components/BlinkPanel";
 import { api, apiUrl } from "../api/client";
@@ -15,7 +17,7 @@ const setLast = (id: string) => { try { localStorage.setItem(LAST, id); } catch 
 function SourceCard({ s, r }: { s: Source; r: LensResult }) {
   const { t } = useI18n();
   const rows: [string, string][] = [
-    [t("lens.o.type"), s.class === "star" ? t("lens.o.star") : t("lens.o.extended")],
+    [t("lens.o.type"), t(`k.${kindOf(s)}` as Key)],
     [t("lens.o.pos"), `x ${s.x.toFixed(1)}, y ${s.y.toFixed(1)} px`],
     [t("lens.o.mag"), `${s.inst_mag.toFixed(2)} (inst. mag)`],
     [t("lens.o.snr"), String(Math.round(s.snr))],
@@ -32,7 +34,7 @@ function SourceCard({ s, r }: { s: Source; r: LensResult }) {
     <div className="src-card">
       <div className="row" style={{ justifyContent: "space-between" }}>
         <b className="stamp-t">#{s.id}</b>
-        <span className={`chip ${s.class === "star" ? "chip-star" : "chip-ext"}`}>{s.class === "star" ? t("lens.stars") : t("lens.ext")}</span>
+        <span className="chip" style={{ borderColor: KIND_COLOR[kindOf(s)], color: KIND_COLOR[kindOf(s)] }}>{t(`k.${kindOf(s)}` as Key)}</span>
       </div>
       <dl className="ev-dl" style={{ gridTemplateColumns: "1fr" }}>
         {rows.map(([k, v]) => <div key={k} className="kv"><dt>{k}</dt><dd className="num mono">{v}</dd></div>)}
@@ -43,6 +45,16 @@ function SourceCard({ s, r }: { s: Source; r: LensResult }) {
   );
 }
 
+function legend(r: LensResult): [string, number][] {
+  const A = r.analysis!;
+  const k = A.kinds;
+  const rows: [string, number][] = [
+    ["known", A.field?.objects.length ?? 0], ["star", k.star ?? 0], ["bright_star", k.bright_star ?? 0], ["galaxy", k.galaxy ?? 0],
+    ["nebula", A.regions.length], ["cluster", A.clusters.length], ["trail", A.trails.length], ["hot", A.repairs.hot_pixels.n],
+  ];
+  return rows.filter(([key, n]) => n > 0 || key === "star");
+}
+
 export default function Lens() {
   const { t } = useI18n();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -50,6 +62,10 @@ export default function Lens() {
   const [strength, setStrength] = useState(85);
   const [deblur, setDeblur] = useState(true);
   const [fake, setFake] = useState(false);
+  const [hot, setHot] = useState(true);
+  const [flat, setFlat] = useState(true);
+  const [layers, setLayers] = useState<Set<string>>(() => new Set(DEFAULT_LAYERS));
+  const toggleLayer = (k: string) => setLayers((old) => { const n = new Set(old); if (n.has(k)) n.delete(k); else n.add(k); return n; });
   const [job, setJob] = useState<LensJob | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [overlay, setOverlay] = useState(true);
@@ -75,6 +91,7 @@ export default function Lens() {
     setErr(null); setMist(false);
     const fd = new FormData();
     fd.append("strength", String(strength)); fd.append("deblur", String(deblur)); fd.append("inject_fake", String(fake));
+    fd.append("hot_pixels", String(hot)); fd.append("flatten", String(flat));
     if (!useSample) { if (!file) return; fd.append("file", file); }
     setJob({ id: "", status: "queued", step: "queued", progress: 0, error: null, result: null });
     api<{ id: string }>(useSample ? "/api/lens/sample" : "/api/lens/jobs", { method: "POST", body: fd })
@@ -84,7 +101,7 @@ export default function Lens() {
     setErr(null); setMist(false);
     setJob({ id: "", status: "queued", step: "fetch", progress: 1, error: null, result: null });
     api<{ id: string }>("/api/lens/skyview", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ target: arcTarget, survey, strength, deblur, add_noise: arcNoise }) })
+      body: JSON.stringify({ target: arcTarget, survey, strength, deblur, add_noise: arcNoise, hot_pixels: hot, flatten: flat }) })
       .then((r) => poll(r.data.id)).catch((e) => { setErr(String(e.message)); setJob(null); });
   };
   const onDrop = (e: DragEvent) => { e.preventDefault(); setOver(false); const f = e.dataTransfer.files[0]; if (f) setFile(f); };
@@ -110,6 +127,10 @@ export default function Lens() {
                 <label className="opt"><span>{t("lens.strength")} <b className="mono num">{strength}%</b></span>
                   <input id="strength" type="range" min={0} max={100} value={strength} onChange={(e) => setStrength(Number(e.target.value))} /></label>
                 <label className="opt chk-opt"><input id="deblur" type="checkbox" checked={deblur} onChange={(e) => setDeblur(e.target.checked)} />{t("lens.deblur")}</label>
+                <label className="opt chk-opt"><input id="hot" type="checkbox" checked={hot} onChange={(e) => setHot(e.target.checked)} />
+                  <span>{t("lens.hot")}<br /><span className="small faint">{t("lens.hot.help")}</span></span></label>
+                <label className="opt chk-opt"><input id="flat" type="checkbox" checked={flat} onChange={(e) => setFlat(e.target.checked)} />
+                  <span>{t("lens.flat")}<br /><span className="small faint">{t("lens.flat.help")}</span></span></label>
                 <label className="opt chk-opt"><input id="fake" type="checkbox" checked={fake} onChange={(e) => setFake(e.target.checked)} />
                   <span>{t("lens.fake")}<br /><span className="small faint">{t("lens.fake.help")}</span></span></label>
               </div>
@@ -143,7 +164,17 @@ export default function Lens() {
                 <button aria-pressed={mist} onClick={() => setMist((v) => !v)}>{t("lens.mist")}</button>
               </div>
             )}>
-            {r ? <CompareViewer r={r} overlay={overlay} mist={mist} selected={sel} onSelect={setSel} /> : <Slot loading={!!busy} body={busy ? t("lens.working") + "…" : t("lens.empty")} h={420} />}
+            {r ? <CompareViewer r={r} overlay={overlay} mist={mist} selected={sel} onSelect={setSel} layers={layers} /> : <Slot loading={!!busy} body={busy ? t("lens.working") + "…" : t("lens.empty")} h={420} />}
+            {r?.analysis && (
+              <div className="lab-legend">
+                <span className="eyebrow">{t("lab.found")}</span>
+                {legend(r).map(([k, n]) => (
+                  <button key={k} type="button" aria-pressed={layers.has(k)} onClick={() => toggleLayer(k)} style={{ ["--c" as string]: KIND_COLOR[k] }}>
+                    <i />{t(`k.${k}` as Key)}<b className="mono">{n.toLocaleString()}</b>
+                  </button>
+                ))}
+              </div>
+            )}
             {r?.source?.kind === "skyview" && (
               <p className="small muted" style={{ marginBottom: 0 }}>
                 <span className="chip">{t("arc.label")}</span>{" "}
@@ -156,14 +187,14 @@ export default function Lens() {
           <div className="span-4 stack">
             <Panel title={t("lens.seal")}>{r ? <SealPanel r={r} /> : <Slot body={t("lens.seal.empty")} h={180} />}</Panel>
             <Panel title={t("lens.objects")}
-              right={r && <span className="small mono"><span style={{ color: "var(--gold)" }}>● {r.counts.stars}</span> <span style={{ color: "var(--sakura)" }}>◯ {r.counts.extended}</span></span>}>
+              right={r && <span className="small mono"><span style={{ color: KIND_COLOR.star }}>● {r.counts.stars}</span> <span style={{ color: KIND_COLOR.galaxy }}>◯ {r.counts.extended}</span></span>}>
               {r ? (
                 <>
                   {selected ? <SourceCard s={selected} r={r} /> : <p className="small faint">{t("lens.o.pick")}</p>}
                   <div className="src-list">
                     {r.sources.slice(0, 40).map((s) => (
                       <button key={s.id} aria-pressed={s.id === sel} onClick={() => setSel(s.id)}>
-                        <i className="dot" style={{ background: s.class === "star" ? "var(--gold)" : "var(--sakura)" }} />
+                        <i className="dot" style={{ background: KIND_COLOR[kindOf(s)] }} />
                         <span className="mono">#{s.id}</span><span className="mono num">{s.inst_mag.toFixed(1)}</span><span className="mono num faint">{s.fwhm.toFixed(1)}px</span>
                       </button>
                     ))}
@@ -178,6 +209,7 @@ export default function Lens() {
               ) : <Slot body={t("lens.objects.empty")} h={180} />}
             </Panel>
           </div>
+          {r?.analysis && <Panel className="span-12" title={t("rep.title")}><SkyReport r={r} /></Panel>}
           <BlinkPanel />
         </div>
       </div>

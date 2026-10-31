@@ -14,24 +14,26 @@ from ..services.lens import archive, pipeline, sample
 router = APIRouter(prefix="/api/lens")
 
 
-def _opts(strength: int, deblur: bool, inject_fake: bool) -> dict:
-    return {"strength": strength, "deblur": deblur, "inject_fake": inject_fake}
+def _opts(strength: int, deblur: bool, inject_fake: bool, hot_pixels: bool = True, flatten: bool = True) -> dict:
+    return {"strength": strength, "deblur": deblur, "inject_fake": inject_fake, "hot_pixels": hot_pixels, "flatten": flatten}
 
 
 @router.post("/jobs")
 async def create_job(bg: BackgroundTasks, file: UploadFile = File(...), strength: int = Form(85),
-                     deblur: bool = Form(True), inject_fake: bool = Form(False)):
+                     deblur: bool = Form(True), inject_fake: bool = Form(False),
+                     hot_pixels: bool = Form(True), flatten: bool = Form(True)):
     data = await file.read()
     if not data:
         raise HTTPException(400, "The file is empty.")
-    jid = pipeline.new_job(file.filename or "upload", _opts(strength, deblur, inject_fake))
+    jid = pipeline.new_job(file.filename or "upload", _opts(strength, deblur, inject_fake, hot_pixels, flatten))
     bg.add_task(pipeline.run, jid, data)
     return envelope({"id": jid}, source="celestra", status="computed")
 
 
 @router.post("/sample")
-async def sample_job(bg: BackgroundTasks, strength: int = Form(85), deblur: bool = Form(True), inject_fake: bool = Form(False)):
-    jid = pipeline.new_job("Synthetic test field", _opts(strength, deblur, inject_fake))
+async def sample_job(bg: BackgroundTasks, strength: int = Form(85), deblur: bool = Form(True), inject_fake: bool = Form(False),
+                     hot_pixels: bool = Form(True), flatten: bool = Form(True)):
+    jid = pipeline.new_job("Synthetic test field", _opts(strength, deblur, inject_fake, hot_pixels, flatten))
     bg.add_task(pipeline.run, jid, sample.make())
     return envelope({"id": jid}, source="celestra", status="demo")
 
@@ -43,6 +45,8 @@ class ArchiveIn(BaseModel):
     strength: int = 85
     deblur: bool = True
     add_noise: bool = False
+    hot_pixels: bool = True
+    flatten: bool = True
 
 
 @router.post("/skyview")
@@ -51,6 +55,7 @@ async def skyview_job(a: ArchiveIn, bg: BackgroundTasks):
     if not a.target.strip():
         raise HTTPException(400, "Enter a target such as M42 or 'Andromeda Galaxy'.")
     opts = {"strength": a.strength, "deblur": a.deblur, "inject_fake": False, "gaia": True,
+            "hot_pixels": a.hot_pixels, "flatten": a.flatten,
             "source": {"kind": "skyview", "target": a.target, "survey": a.survey, "url": archive.SOURCE_URL}}
     jid = pipeline.new_job(f"{a.target} · {a.survey}", opts)
 
