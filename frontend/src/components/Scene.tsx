@@ -111,7 +111,7 @@ export default function Scene({ variant, moonX = 1180 }: { variant: SceneVariant
           <stop offset="1" stopColor="#9b7bff" stopOpacity="0" />
         </radialGradient>
       </defs>
-      <rect width={W} height={H} fill={`url(#sky-${variant})`} />
+      <rect width={W} height={H} fill={`url(#sky-${variant})`} opacity="0.55" />
       <ellipse cx={moonX - 220} cy={70} rx={520} ry={150} fill={`url(#neb-${variant})`} />
       <Stars seed={seed} />
       <Motif v={variant} x={moonX} />

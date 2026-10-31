@@ -63,15 +63,22 @@ function Moon() {
     <Panel className="span-4" title={t("dojo.moon")}>
       {err && <p className="small" style={{ color: "var(--bad)" }}>{err}</p>}
       {m ? (
-        <div className="moon-card">
-          <MoonGlyph angle={m.phase_angle} size={104} />
-          <div>
-            <div className={`moon-kanji ${lang === "ja" ? "" : "loc"}`}>{lunarName(m.lunar_day, t, lang).name}</div>
-            <div className="small muted">{lunarName(m.lunar_day, t, lang).sub}</div>
-            <div style={{ marginTop: 6 }}>{t(`moon.phase.${m.phase_name}`)} · <b className="num" style={{ color: "var(--gold)" }}>{Math.round(m.illumination * 100)}%</b> <span className="faint small">{t("moon.illum")}</span></div>
-            <div className="small muted num">{t("moon.rise")} {fmtTime(m.rise, lang)} · {t("moon.set")} {fmtTime(m.set, lang)}</div>
-            <div className="small faint num">{t("moon.full")} {fmtDate(m.next_phases.full, lang)} · {t("moon.new")} {fmtDate(m.next_phases.new, lang)}</div>
+        <div className="moon-card2">
+          <div className="moon-hero">
+            <MoonGlyph angle={m.phase_angle} size={132} />
+            <div>
+              <div className="moon-kanji loc">{lunarName(m.lunar_day, t, lang).name}</div>
+              <div className="moon-phase">{t(`moon.phase.${m.phase_name}`)}</div>
+              <div className="moon-pct"><b className="num">{Math.round(m.illumination * 100)}%</b> <span>{t("moon.illum")}</span></div>
+            </div>
           </div>
+          <div className="moon-cycle" aria-hidden="true"><i style={{ width: `${Math.min(100, (Number(m.lunar_day) / 29.53) * 100).toFixed(1)}%` }} /></div>
+          <dl className="moon-stats">
+            <div><dt>{t("moon.rise")}</dt><dd className="num">{fmtTime(m.rise, lang)}</dd></div>
+            <div><dt>{t("moon.set")}</dt><dd className="num">{fmtTime(m.set, lang)}</dd></div>
+            <div><dt>{t("moon.full")}</dt><dd className="num">{fmtDate(m.next_phases.full, lang)}</dd></div>
+            <div><dt>{t("moon.new")}</dt><dd className="num">{fmtDate(m.next_phases.new, lang)}</dd></div>
+          </dl>
         </div>
       ) : !err && <Slot loading body={t("watch.loading")} />}
     </Panel>
