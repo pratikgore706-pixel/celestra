@@ -225,3 +225,111 @@ html[lang="hi"] :is(.eyebrow, .cv-tag, .api, .band-name), html[lang="pa"] :is(.e
 .drop:hover, .drop.over { border-color: var(--accent); background: radial-gradient(70% 60% at 50% 40%, rgba(91, 156, 255, .14), transparent 70%), var(--slot-bg); }
 .drop.over { transform: scale(1.01); }
 .drop:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* chart + dome colours (night defaults; the Day theme below overrides them) */
+:root { --chart-grid: #1c2638; --chart-line: #26324a; --chart-axis: #93a0b8; --chart-tip: #0b111c; --dome-bg: #070c16; }
+
+/* =====================================================================
+   DAY THEME: a bright, airy light mode (html[data-theme="akatsuki"])
+   Morning-sky page, white glass panels, navy ink, deeper blue accent so
+   text keeps proper contrast. Header art becomes a sunrise.
+   ===================================================================== */
+html[data-theme="akatsuki"] {
+  color-scheme: light;
+  --ink: #f5ede2; --night: #fffaf3; --night-2: #f8efe3;
+  --rule: rgba(92, 64, 40, .10); --rule-strong: rgba(92, 64, 40, .18); --hair: rgba(92, 64, 40, .12);
+  --paper: #2a2140; --paper-hi: #1a1330; --mist: #5f5573; --faint: #8f8396;
+  --accent: #5546d6; --accent-hi: #4234b8; --accent-ink: #ffffff;
+  --gold: var(--accent); --gold-hi: #7062e6; --gold-dim: #b9b1ee;
+  --good: #12875a; --warn: #b8640a; --bad: #c93a3a;
+  --ring-track: rgba(85, 70, 214, .14); --active-bg: rgba(85, 70, 214, .08);
+  --panel-top: #fffaf3; --panel-bot: #fffaf3; --panel-line: var(--hair); --panel-head-line: var(--rule);
+  --field-bg: #fffdf9; --field-line: rgba(92, 64, 40, .2);
+  --bar-bg: rgba(255, 249, 240, .85); --slot-bg: #f8efe3;
+  --chart-grid: #ece0cf; --chart-line: #dccbb3; --chart-axis: #7a6e80; --chart-tip: #fffaf3; --dome-bg: #fbf3e8;
+}
+html[data-theme="akatsuki"] body {
+  background:
+    radial-gradient(1100px 560px at 90% -6%, rgba(255, 180, 120, .30), transparent 62%),
+    radial-gradient(1000px 520px at 0% 0%, rgba(170, 150, 255, .22), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, rgba(255, 205, 160, .25), transparent 70%),
+    #f5ede2;
+  background-repeat: no-repeat; background-attachment: scroll; color: var(--paper);
+}
+html[data-theme="akatsuki"] ::selection { background: rgba(85, 70, 214, .2); color: var(--paper-hi); }
+
+/* top bar + tonight strip */
+html[data-theme="akatsuki"] .topbar { background: rgba(255, 248, 238, .82); border-bottom-color: rgba(92, 64, 40, .10);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .7) inset, 0 8px 30px -18px rgba(92, 64, 40, .35); }
+html[data-theme="akatsuki"] .brand-name { color: var(--paper-hi); }
+html[data-theme="akatsuki"] .nav a { color: var(--mist); }
+html[data-theme="akatsuki"] .nav a:hover, html[data-theme="akatsuki"] .nav a.active { color: var(--paper-hi); }
+html[data-theme="akatsuki"] .nav a.active::after { box-shadow: 0 0 10px rgba(85, 70, 214, .45); }
+html[data-theme="akatsuki"] .sky-switch { background: #fffaf3; border-color: var(--rule-strong); }
+html[data-theme="akatsuki"] .omamori { background: rgba(255, 246, 234, .7); border-bottom-color: var(--rule); }
+html[data-theme="akatsuki"] .omamori-in { color: var(--mist); }
+
+/* page header: a sunrise over the same sky */
+html[data-theme="akatsuki"] .scene { background: #f2b98c; border-bottom-color: rgba(92, 64, 40, .12); }
+html[data-theme="akatsuki"] .scene-sky { object-position: 6% 64%; opacity: 1; filter: saturate(1.05) brightness(1.08); }
+html[data-theme="akatsuki"] .scene svg.art { opacity: .35; mix-blend-mode: soft-light; }
+html[data-theme="akatsuki"] .scene::after {
+  background: linear-gradient(90deg, rgba(20, 28, 60, .55) 0%, rgba(20, 28, 60, .18) 45%, rgba(20, 28, 60, 0) 75%),
+              linear-gradient(0deg, rgba(245, 237, 226, .92) 0%, rgba(245, 237, 226, 0) 38%); }
+html[data-theme="akatsuki"] .scene-text h1 { color: #fff; text-shadow: 0 2px 24px rgba(20, 28, 60, .35); }
+html[data-theme="akatsuki"] .scene-text p { color: rgba(255, 255, 255, .92); text-shadow: 0 1px 12px rgba(20, 28, 60, .4); }
+html[data-theme="akatsuki"] .scene-eyebrow { color: #fff; }
+
+/* panels: white cards with soft, cool shadows */
+html[data-theme="akatsuki"] .panel { background: linear-gradient(180deg, #fffcf7, #fff8ef); border-color: rgba(92, 64, 40, .10);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 1px 2px rgba(92, 64, 40, .06), 0 20px 44px -28px rgba(92, 54, 30, .32); }
+html[data-theme="akatsuki"] .panel:hover { border-color: rgba(85, 70, 214, .25); box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 1px 2px rgba(92, 64, 40, .07), 0 26px 54px -28px rgba(92, 54, 30, .38); }
+html[data-theme="akatsuki"] .panel::before { background: linear-gradient(90deg, transparent, rgba(255, 150, 90, .55), transparent); }
+html[data-theme="akatsuki"] .panel-title::before { background: linear-gradient(180deg, #ff9a5c, #7a5be0); box-shadow: 0 2px 8px rgba(122, 91, 224, .35); }
+html[data-theme="akatsuki"] :is(.top-spot, .ev, .src-card, .cal-d, .moon-stats div, .dome-legend, .log-form, .toast, .virtue, .g-item, .g-card, .g-quick li, .g-bands li, .g-faq details, .sr-objs li) {
+  background: #f8efe3; border-color: rgba(92, 64, 40, .10); }
+html[data-theme="akatsuki"] .cal-d.today { background: rgba(85, 70, 214, .09); }
+html[data-theme="akatsuki"] .slot { background: radial-gradient(80% 70% at 50% 40%, rgba(255, 170, 110, .10), transparent 70%), #f8efe3; border-color: rgba(92, 64, 40, .18); }
+html[data-theme="akatsuki"] .slot-ic { color: var(--accent); background: linear-gradient(180deg, rgba(85, 70, 214, .12), rgba(255, 150, 90, .08)); border-color: rgba(85, 70, 214, .22); box-shadow: none; }
+
+/* controls */
+html[data-theme="akatsuki"] .btn:not(:disabled):not(.ghost) { box-shadow: 0 8px 20px -10px rgba(85, 70, 214, .7); }
+html[data-theme="akatsuki"] .btn.ghost { background: #fffaf3; color: var(--paper); border-color: var(--rule-strong); }
+html[data-theme="akatsuki"] .btn.ghost:hover { background: rgba(85, 70, 214, .06); border-color: var(--accent); }
+html[data-theme="akatsuki"] .btn:disabled { background: #efe5d8; color: #b0a493; border-color: rgba(92, 64, 40, .12); }
+html[data-theme="akatsuki"] .field { background: #fffdf9; color: var(--paper-hi); }
+html[data-theme="akatsuki"] .field::placeholder { color: #ab9f8f; }
+html[data-theme="akatsuki"] .seg { background: #f3e8da; border-color: rgba(92, 64, 40, .12); }
+html[data-theme="akatsuki"] .seg button { color: var(--mist); }
+html[data-theme="akatsuki"] .panel a.small, html[data-theme="akatsuki"] .panel-h a.small { color: var(--accent-hi); background: rgba(85, 70, 214, .08); border-color: rgba(85, 70, 214, .22); }
+html[data-theme="akatsuki"] .panel a.small:hover { color: #fff; background: var(--accent); border-color: var(--accent); }
+html[data-theme="akatsuki"] .chip { color: var(--mist); border-color: var(--rule-strong); }
+html[data-theme="akatsuki"] .eyebrow { color: var(--faint); }
+
+/* data viz */
+html[data-theme="akatsuki"] .hourly td:first-child, html[data-theme="akatsuki"] .hourly th:first-child { background: #fffaf2; }
+html[data-theme="akatsuki"] .dome svg { filter: none; }
+html[data-theme="akatsuki"] .moon-hero svg { filter: drop-shadow(0 6px 18px rgba(92, 54, 30, .2)); }
+html[data-theme="akatsuki"] .moon-cycle i { background: linear-gradient(90deg, #5546d6, #ff9a5c); }
+html[data-theme="akatsuki"] .map-frame { border-color: rgba(92, 64, 40, .12); }
+html[data-theme="akatsuki"] .map-frame .leaflet-container { background: #ece3d6; }
+html[data-theme="akatsuki"] .leaflet-bar a { background: #fffaf3; color: var(--paper); border-color: var(--rule); }
+html[data-theme="akatsuki"] .cv, html[data-theme="akatsuki"] .blink-view { border-color: rgba(92, 64, 40, .14); }
+html[data-theme="akatsuki"] .lab-legend button { background: #fffaf3; }
+html[data-theme="akatsuki"] .drop { border-color: rgba(85, 70, 214, .35); background: radial-gradient(70% 60% at 50% 40%, rgba(255, 170, 110, .12), transparent 70%), #f8efe3; }
+html[data-theme="akatsuki"] .drop::before { background-color: rgba(85, 70, 214, .1); border-color: rgba(85, 70, 214, .28); box-shadow: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26' viewBox='0 0 24 24' fill='none' stroke='%235546d6' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4M7 9l5-5 5 5'/%3E%3Cpath d='M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E"); }
+html[data-theme="akatsuki"] .virtue.earned { background: rgba(85, 70, 214, .08); border-color: rgba(85, 70, 214, .35); }
+html[data-theme="akatsuki"] .virtue .vk { color: #cdbfae; }
+html[data-theme="akatsuki"] .virtue.earned .vk { color: var(--accent); filter: none; }
+html[data-theme="akatsuki"] .g-index { background: #fffaf3; }
+html[data-theme="akatsuki"] footer.foot { background: transparent; border-top-color: var(--rule); color: var(--faint); }
+:root { --moon-lit: #f1dca6; --moon-dark: #1a2233; --moon-dot: #e7ecf5; }
+html[data-theme="akatsuki"] { --moon-lit: #f6cf7e; --moon-dark: #3e3256; --moon-dot: #9a8aa8; }
+/* day: selected segment text, slider handle + tags on the photo, map attribution */
+html[data-theme="akatsuki"] .seg button[aria-pressed="true"] { color: #fff; }
+html[data-theme="akatsuki"] .seg[aria-label="Event types"] button[aria-pressed="true"] { color: var(--paper-hi); background: #fffaf3; box-shadow: 0 1px 3px rgba(92, 64, 40, .14); }
+html[data-theme="akatsuki"] .cv-handle, html[data-theme="akatsuki"] .cv-handle span { background: #fff; color: #0b1426; }
+html[data-theme="akatsuki"] .cv-tag { color: #fff; background: rgba(5, 8, 15, .55); }
+html[data-theme="akatsuki"] .leaflet-control-attribution { background: rgba(255, 248, 238, .9) !important; color: var(--mist) !important; }
+html[data-theme="akatsuki"] .leaflet-control-attribution a { color: var(--accent-hi) !important; }

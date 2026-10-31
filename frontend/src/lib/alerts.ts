@@ -26,5 +26,5 @@ export async function addAlert(ev: { id: string; type: string; title: string; st
 }
 
 export const TYPE_COLOR: Record<string, string> = {
-  moon: "#e7ecf5", meteor: "#c39bff", eclipse: "#ff7a59", iss: "#5b9cff", planet: "#ffb547", launch: "#3ddc97",
+  moon: "var(--moon-dot)", meteor: "#c39bff", eclipse: "#ff7a59", iss: "#5b9cff", planet: "#ffb547", launch: "#3ddc97",
 };

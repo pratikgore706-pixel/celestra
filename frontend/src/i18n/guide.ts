@@ -51,7 +51,7 @@ const en: GuideText = {
     items: [
       { t: "Main menu", d: "Mission Control, Sky Finder, Sky Calendar, Image Lab and this Guide. The page you are on is underlined in blue." },
       { t: "API light", d: "Green means the Celestra engine is running. Red means it is offline; run restart.bat on the laptop." },
-      { t: "Night / Dawn", d: "Two looks. Night is deep space black for outdoor use. Dawn is a lighter steel blue for daytime." },
+      { t: "Night / Day", d: "Two looks. Night is deep space black for outdoor use and keeps your eyes dark-adapted. Day is a bright light theme for planning indoors." },
       { t: "Language", d: "English, हिन्दी and ਪੰਜਾਬੀ. Dates, times and event names switch too." },
       { t: "Tonight banner", d: "Below the bar: whether the Moon is up, when it rises or sets, and your reminders for today. Close it with ×." },
     ],
@@ -243,7 +243,7 @@ const hi: GuideText = {
     items: [
       { t: "मुख्य मेन्यू", d: "मिशन कंट्रोल, स्काई फ़ाइंडर, आकाश कैलेंडर, इमेज लैब और यह गाइड। जिस पेज पर आप हैं उसके नीचे नीली रेखा होती है।" },
       { t: "API बत्ती", d: "हरी का मतलब सेलेस्ट्रा इंजन चल रहा है। लाल का मतलब बंद है; लैपटॉप पर restart.bat चलाएँ।" },
-      { t: "रात / भोर", d: "दो रूप। रात बाहर इस्तेमाल के लिए गहरा अँधेरा। भोर दिन के लिए हल्का स्लेटी-नीला।" },
+      { t: "रात / दिन", d: "दो रूप। रात बाहर इस्तेमाल के लिए गहरा अँधेरा, ताकि आँखें अँधेरे की आदी रहें। दिन घर के अंदर योजना बनाने के लिए उजली हल्की थीम।" },
       { t: "भाषा", d: "English, हिन्दी और ਪੰਜਾਬੀ। तारीख, समय और घटनाओं के नाम भी बदलते हैं।" },
       { t: "आज रात पट्टी", d: "बार के नीचे: चंद्रमा ऊपर है या नहीं, कब उगेगा या डूबेगा, और आज के अनुस्मारक। × से बंद करें।" },
     ],
@@ -433,7 +433,7 @@ const pa: GuideText = {
     items: [
       { t: "ਮੁੱਖ ਮੀਨੂ", d: "ਮਿਸ਼ਨ ਕੰਟਰੋਲ, ਸਕਾਈ ਫ਼ਾਈਂਡਰ, ਅਸਮਾਨੀ ਕੈਲੰਡਰ, ਇਮੇਜ ਲੈਬ ਅਤੇ ਇਹ ਗਾਈਡ। ਜਿਸ ਪੰਨੇ 'ਤੇ ਤੁਸੀਂ ਹੋ ਉਸ ਹੇਠ ਨੀਲੀ ਲਕੀਰ ਹੁੰਦੀ ਹੈ।" },
       { t: "API ਬੱਤੀ", d: "ਹਰੀ ਦਾ ਮਤਲਬ ਸੈਲੇਸਟ੍ਰਾ ਇੰਜਣ ਚੱਲ ਰਿਹਾ ਹੈ। ਲਾਲ ਦਾ ਮਤਲਬ ਬੰਦ ਹੈ; ਲੈਪਟਾਪ 'ਤੇ restart.bat ਚਲਾਓ।" },
-      { t: "ਰਾਤ / ਸਵੇਰ", d: "ਦੋ ਰੂਪ। ਰਾਤ ਬਾਹਰ ਵਰਤੋਂ ਲਈ ਡੂੰਘਾ ਹਨੇਰਾ। ਸਵੇਰ ਦਿਨ ਲਈ ਹਲਕਾ ਸਲੇਟੀ-ਨੀਲਾ।" },
+      { t: "ਰਾਤ / ਦਿਨ", d: "ਦੋ ਰੂਪ। ਰਾਤ ਬਾਹਰ ਵਰਤੋਂ ਲਈ ਡੂੰਘਾ ਹਨੇਰਾ, ਤਾਂ ਜੋ ਅੱਖਾਂ ਹਨੇਰੇ ਦੀਆਂ ਆਦੀ ਰਹਿਣ। ਦਿਨ ਘਰ ਅੰਦਰ ਯੋਜਨਾ ਲਈ ਚਮਕਦਾਰ ਹਲਕੀ ਥੀਮ।" },
       { t: "ਭਾਸ਼ਾ", d: "English, हिन्दी ਅਤੇ ਪੰਜਾਬੀ। ਤਾਰੀਖ, ਸਮਾਂ ਅਤੇ ਘਟਨਾਵਾਂ ਦੇ ਨਾਮ ਵੀ ਬਦਲਦੇ ਹਨ।" },
       { t: "ਅੱਜ ਰਾਤ ਪੱਟੀ", d: "ਬਾਰ ਦੇ ਹੇਠਾਂ: ਚੰਨ ਉੱਪਰ ਹੈ ਜਾਂ ਨਹੀਂ, ਕਦੋਂ ਚੜ੍ਹੇਗਾ ਜਾਂ ਛਿਪੇਗਾ, ਅਤੇ ਅੱਜ ਦੀਆਂ ਯਾਦ-ਦਹਾਨੀਆਂ। × ਨਾਲ ਬੰਦ ਕਰੋ।" },
     ],

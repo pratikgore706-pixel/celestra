@@ -32,14 +32,14 @@ export default function SkyDome() {
   return (
     <div className="dome">
       <svg viewBox="0 0 280 280" role="img" aria-label="Sky dome: where the Moon and the next ISS pass are">
-        <circle cx={C} cy={C} r={R} fill="#070c16" stroke="#26324a" />
-        {[30, 60].map((a) => <circle key={a} cx={C} cy={C} r={((90 - a) / 90) * R} fill="none" stroke="#2e2a3a" strokeDasharray="3 4" />)}
-        <line x1={C - R} y1={C} x2={C + R} y2={C} stroke="#2e2a3a" />
-        <line x1={C} y1={C - R} x2={C} y2={C + R} stroke="#2e2a3a" />
+        <circle cx={C} cy={C} r={R} fill="var(--dome-bg)" stroke="var(--chart-line)" />
+        {[30, 60].map((a) => <circle key={a} cx={C} cy={C} r={((90 - a) / 90) * R} fill="none" stroke="var(--chart-grid)" strokeDasharray="3 4" />)}
+        <line x1={C - R} y1={C} x2={C + R} y2={C} stroke="var(--chart-grid)" />
+        <line x1={C} y1={C - R} x2={C} y2={C + R} stroke="var(--chart-grid)" />
         {[["N", C, C - R - 8], ["E", C + R + 9, C + 4], ["S", C, C + R + 16], ["W", C - R - 9, C + 4]].map(([l, x, y]) => (
-          <text key={String(l)} x={Number(x)} y={Number(y)} textAnchor="middle" fill="#93a0b8" fontSize="11" fontFamily="Roboto Mono, monospace">{l}</text>
+          <text key={String(l)} x={Number(x)} y={Number(y)} textAnchor="middle" fill="var(--chart-axis)" fontSize="11" fontFamily="Roboto Mono, monospace">{l}</text>
         ))}
-        <text x={C + 4} y={C - ((90 - 60) / 90) * R - 3} fill="#66728a" fontSize="9" fontFamily="Roboto Mono, monospace">60°</text>
+        <text x={C + 4} y={C - ((90 - 60) / 90) * R - 3} fill="var(--faint)" fontSize="9" fontFamily="Roboto Mono, monospace">60°</text>
         {issPath && <path d={issPath} fill="none" stroke="#5b9cff" strokeWidth="2" strokeDasharray="6 4" />}
         {iss && (() => { const [x, y] = pos(iss.max_alt, iss.peak_az); return <circle cx={x} cy={y} r="4" fill="#5b9cff" />; })()}
         {m && <><circle cx={m[0]} cy={m[1]} r="11" fill="#f1dca6" /><circle cx={m[0]} cy={m[1]} r="15" fill="none" stroke="#5b9cff" strokeOpacity="0.5" /></>}

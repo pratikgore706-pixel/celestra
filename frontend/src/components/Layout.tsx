@@ -9,7 +9,7 @@ import { fmtTime } from "../lib/format";
 import { scheduleNotifications } from "../lib/alerts";
 import MonLogo from "./MonLogo";
 
-/** Two looks: Night (deep space) and Dawn (lighter steel blue for daytime). */
+/** Two looks: Night (deep space) and Day (a bright light theme). */
 function ThemeSwitch() {
   const { t } = useI18n();
   const [theme, setTheme] = useState<"yoru" | "akatsuki">(() => {

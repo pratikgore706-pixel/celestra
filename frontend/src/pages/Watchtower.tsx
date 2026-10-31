@@ -1,3 +1,4 @@
+import { useTheme } from "../lib/theme";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -142,6 +143,7 @@ function SpotDetail({ spot, meta }: { spot: Spot; meta: Meta | null }) {
 }
 
 export default function Watchtower() {
+  const look = useTheme();
   const { t, lang } = useI18n();
   const { place, setPlace } = usePlace();
   const [mode, setMode] = useState<Mode>("casual");
@@ -199,12 +201,14 @@ export default function Watchtower() {
             <div className="map-frame">
               <MapContainer center={[place.lat, place.lon]} zoom={9} style={{ height: 460 }} scrollWheelZoom>
                 <TileLayer
+                  key={`base-${look}`}
                   attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a> &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'
-                  url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+                  url={`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_${look === "day" ? "Light" : "Dark"}_Gray_Base/MapServer/tile/{z}/{y}/{x}`}
                   maxZoom={16}
                 />
                 <TileLayer
-                  url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+                  key={`ref-${look}`}
+                  url={`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_${look === "day" ? "Light" : "Dark"}_Gray_Reference/MapServer/tile/{z}/{y}/{x}`}
                   maxZoom={16}
                 />
                 <Recenter lat={place.lat} lon={place.lon} />
