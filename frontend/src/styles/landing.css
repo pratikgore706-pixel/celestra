@@ -8,8 +8,8 @@
 
 /* sky: one square texture, rolled around a point above the horizon */
 .lp-sky { position: absolute; left: 50%; top: 88%; width: max(150vmax, 200vh); aspect-ratio: 1; z-index: 0;
-  transform: translate(-50%, -50%) rotate(var(--rot)) scale(var(--gscale)); will-change: transform; }
-.lp-sky img { width: 100%; height: 100%; display: block; object-fit: cover; filter: saturate(1.1); }
+  transform: translate(-50%, -50%) rotate(25deg); will-change: transform; backface-visibility: hidden; }
+.lp-sky img { width: 100%; height: 100%; display: block; object-fit: cover; }
 .lp-glow { position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: radial-gradient(80% 30% at 50% 78%, rgba(91, 140, 255, .22), transparent 70%),
               linear-gradient(180deg, rgba(3, 6, 15, .5) 0%, transparent 20%); }
@@ -31,32 +31,32 @@
 
 /* mountains: sink a little as you scroll, as if you are tilting your head up */
 .lp-mtn { position: absolute; left: 50%; bottom: -3vh; width: max(100vw, 160vh); aspect-ratio: 2076 / 758; z-index: 2;
-  transform: translate(-50%, var(--mtn)); will-change: transform; }
-.lp-mtn img { width: 100%; height: 100%; display: block; user-select: none;
-  filter: brightness(calc(1 + var(--day) * .35)) sepia(calc(var(--day) * .35)) saturate(calc(1 + var(--day) * .4)) hue-rotate(calc(var(--day) * -12deg)); }
+  transform: translate3d(-50%, 0, 0); will-change: transform; }
+.lp-mtn img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
+.lp-mtn-day { will-change: opacity; }
 /* warm low sun at the start of the scroll, fading into night */
-.lp-dusk { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: var(--day);
+.lp-dusk { position: absolute; inset: 0; z-index: 4; pointer-events: none; will-change: opacity;
   background: radial-gradient(22% 30% at 1% 33%, rgba(255, 236, 160, .55), rgba(255, 190, 90, .18) 45%, transparent 75%),
               radial-gradient(70% 45% at 8% 82%, rgba(255, 170, 80, .35), transparent 70%),
-              linear-gradient(0deg, rgba(255, 140, 70, .16) 0%, transparent 40%); mix-blend-mode: screen; }
+              linear-gradient(0deg, rgba(255, 140, 70, .12) 0%, transparent 40%); }
 
 /* the explorer on the rock (left of centre, like a cover shot) */
 .lp-scene { position: absolute; left: 1vw; bottom: -1vh; height: min(57vh, 50vw); aspect-ratio: 1341 / 866; z-index: 3;
-  transform: scale(var(--scene)); transform-origin: 40% 100%; will-change: transform; }
+  transform: scale(1.06); transform-origin: 40% 100%; will-change: transform; }
 .lp-scene img, .lp-rib { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; }
-.lp-boy { filter: drop-shadow(0 0 30px rgba(91, 140, 255, .18)); }
-.lp-rib { transform: rotate(var(--rib)) scaleX(var(--ribs)); will-change: transform; }
+
+.lp-rib { will-change: transform; }
 .lp-rib img { animation: lp-flutter 2.6s ease-in-out infinite; }
 @keyframes lp-flutter { 0%, 100% { transform: skewY(0deg) rotate(0deg); } 50% { transform: skewY(-3deg) rotate(-2deg) translateY(-2px); } }
 
 .lp-shade { position: absolute; inset: 0; z-index: 4; pointer-events: none;
-  background: linear-gradient(90deg, rgba(3, 6, 15, calc(.62 - var(--day) * .4)) 0%, rgba(3, 6, 15, .1) 30%, transparent 50%, rgba(3, 6, 15, .55) 72%, rgba(3, 6, 15, .78) 100%),
+  background: linear-gradient(90deg, rgba(3, 6, 15, .38) 0%, rgba(3, 6, 15, .1) 30%, transparent 50%, rgba(3, 6, 15, .55) 72%, rgba(3, 6, 15, .78) 100%),
               linear-gradient(0deg, rgba(3, 6, 15, .55) 0%, transparent 22%); }
 
 /* left mark */
 .lp-brand { position: absolute; z-index: 5; left: max(32px, 5vw); top: clamp(24px, 7vh, 96px); width: min(40vw, 560px); }
 .lp-kicker { display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 12px; border-radius: 999px;
-  border: 1px solid rgba(139, 186, 255, .3); background: rgba(91, 156, 255, .08); backdrop-filter: blur(6px);
+  border: 1px solid rgba(139, 186, 255, .3); background: rgba(91, 156, 255, .08);
   font: 500 11px/1 var(--f-mono); letter-spacing: .2em; text-transform: uppercase; color: #a9c8ff; animation: lp-in 1s .05s both; }
 .lp-pulse { position: relative; width: 7px; height: 7px; border-radius: 50%; background: #3ddc97; }
 .lp-pulse::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid #3ddc97; animation: lp-ping 2s ease-out infinite; }
@@ -94,7 +94,7 @@
 .lp-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
 .lp-cta .btn { padding: 12px 22px; font-size: 15px; text-decoration: none; border-radius: 999px; }
 .lp-cta .btn:not(.ghost) { box-shadow: 0 10px 30px -8px rgba(91, 156, 255, .8); }
-.lp-cta .btn.ghost { background: rgba(3, 6, 15, .45); backdrop-filter: blur(6px); }
+.lp-cta .btn.ghost { background: rgba(3, 6, 15, .6); }
 
 /* chapter rail + scroll cue */
 .lp-rail { position: absolute; z-index: 6; right: max(18px, 2vw); top: 50%; transform: translateY(-50%); display: grid; gap: 14px; }
@@ -104,7 +104,7 @@
 .lp-rail button[data-on="1"] i { width: 8px; height: 20px; border-radius: 4px; background: #5b9cff; box-shadow: 0 0 12px rgba(91, 156, 255, .8); }
 .lp-rail button:focus-visible { outline: 2px solid #fff; border-radius: 50%; }
 .lp-cue { position: absolute; z-index: 6; left: 50%; bottom: 22px; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px;
-  font: 500 10.5px var(--f-mono); letter-spacing: .24em; text-transform: uppercase; color: #aab6d4; opacity: calc(1 - var(--p) * 8); }
+  font: 500 10.5px var(--f-mono); letter-spacing: .24em; text-transform: uppercase; color: #aab6d4; }
 .lp-cue i { width: 1px; height: 34px; background: linear-gradient(180deg, #fff, transparent); animation: lp-cue 1.8s ease-in-out infinite; transform-origin: top; }
 @keyframes lp-cue { 0% { transform: scaleY(0); opacity: 1; } 70% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
 
@@ -120,7 +120,7 @@
   .lp-ch { top: auto; bottom: 0; margin-top: 0; }
   .lp-ch h2 { font-size: 24px; }
   .lp-ch p { font-size: 14px; }
-  .lp-scene { left: 50%; bottom: 38%; height: 30%; transform: translateX(-50%) scale(var(--scene)); transform-origin: 50% 100%; }
+  .lp-scene { left: 50%; bottom: 38%; height: 30%; transform: translateX(-50%) scale(1.06); transform-origin: 50% 100%; }
   .lp-mtn { width: max(100vw, 170vh); bottom: 30%; }
   .lp-sky { left: 78%; top: 80%; }
   .lp-shade { background: linear-gradient(180deg, rgba(3, 6, 15, .6) 0%, transparent 30%, transparent 45%, rgba(3, 6, 15, .95) 68%); }
@@ -138,15 +138,15 @@ html[lang="hi"] .lp :is(.lp-kicker, .lp-eyebrow, .lp-cue), html[lang="pa"] .lp :
 .lp-kicker { background: rgba(3, 6, 15, .45); }
 
 /* ---------- Sun and Moon on one arc (positions from Landing.tsx) ---------- */
-.lp-sun, .lp-moon { position: absolute; z-index: 1; pointer-events: none; will-change: left, top; }
-.lp-sun { width: clamp(70px, 8vw, 140px); aspect-ratio: 1; left: var(--sx); top: var(--sy); transform: translate(-50%, -50%); }
+.lp-sun, .lp-moon { position: absolute; z-index: 1; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.lp-sun { width: clamp(70px, 8vw, 140px); aspect-ratio: 1; }
 .lp-sun::before { content: ""; position: absolute; inset: -260%; border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 214, 120, .55) 0%, rgba(255, 170, 70, .22) 22%, rgba(255, 140, 60, .08) 45%, transparent 70%); }
 .lp-sun i { position: absolute; inset: 0; border-radius: 50%;
   background: radial-gradient(circle at 45% 42%, #fffdf2 0%, #fff3b8 38%, #ffd36b 72%, #ffb347 100%);
   box-shadow: 0 0 40px 12px rgba(255, 220, 130, .75), 0 0 120px 40px rgba(255, 170, 70, .45); }
-.lp-moon { width: clamp(66px, 7.2vw, 128px); aspect-ratio: 1; left: var(--mx); top: var(--my); transform: translate(-50%, -50%); }
-.lp-moon::before { content: ""; position: absolute; inset: -140%; border-radius: 50%; opacity: calc(.4 + var(--moonlit) * .6);
+.lp-moon { width: clamp(66px, 7.2vw, 128px); aspect-ratio: 1; }
+.lp-moon-glow { position: absolute; inset: -140%; border-radius: 50%; opacity: .4; will-change: opacity;
   background: radial-gradient(circle, rgba(200, 215, 255, .32) 0%, rgba(140, 170, 255, .12) 30%, transparent 62%); }
 .lp-moon img { position: relative; width: 100%; height: 100%; display: block;
   filter: drop-shadow(0 0 18px rgba(210, 225, 255, .75)) drop-shadow(0 0 50px rgba(150, 180, 255, .45)); }

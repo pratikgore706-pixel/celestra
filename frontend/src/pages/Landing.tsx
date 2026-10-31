@@ -33,67 +33,75 @@ export default function Landing() {
     const el = root.current, st = stage.current;
     if (!el || !st) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let target = 0, cur = 0, raf = 0;
-    const t0 = performance.now();
+    const q = <T extends HTMLElement>(c: string) => st.querySelector<T>(c);
+    const sky = q(".lp-sky"), sun = q(".lp-sun"), moon = q(".lp-moon"), moonGlow = q(".lp-moon-glow");
+    const mtn = q(".lp-mtn"), mtnDay = q(".lp-mtn-day"), dusk = q(".lp-dusk"), scene = q(".lp-scene"), rib = q(".lp-rib"), cue = q(".lp-cue");
+    let target = 0, cur = -1, shown = -1, raf = 0, W = 0, H = 0, VH = 0, lastActive = -1;
 
+    // Everything below is transform/opacity only (GPU-composited): no layout, no filters, no
+    // style variables on the whole scene. The loop runs only while the scene is catching up
+    // with the scroll position, then stops.
+    const apply = (p: number) => {
+      sky && (sky.style.transform = `translate(-50%, -50%) rotate(${(reduce ? 25 : 25 - p * 70).toFixed(2)}deg) scale(${(1 + p * 0.05).toFixed(4)})`);
+      // Sun and Moon ride one arc: the Sun starts high and sets behind the left mountains,
+      // the Moon (opposite it) rises on the right and ends high. Positions are % of the scene.
+      const th = ((95 + 180 * p) * Math.PI) / 180;
+      const narrow = W < 860;
+      const cx = narrow ? 78 : 50, rx = narrow ? 18 : 40, ry = narrow ? 42 : 88, cy = narrow ? 63 : 108;
+      const c = Math.cos(th), sn = Math.sin(th);
+      sun && (sun.style.transform = `translate3d(${((W * (cx + rx * c)) / 100).toFixed(1)}px, ${((H * (cy - ry * sn)) / 100).toFixed(1)}px, 0) translate(-50%, -50%)`);
+      moon && (moon.style.transform = `translate3d(${((W * (cx - rx * c)) / 100).toFixed(1)}px, ${((H * (cy + ry * sn)) / 100).toFixed(1)}px, 0) translate(-50%, -50%)`);
+      const day = smooth(0.15, 0.85, sn);
+      mtnDay && (mtnDay.style.opacity = day.toFixed(3));
+      dusk && (dusk.style.opacity = day.toFixed(3));
+      moonGlow && (moonGlow.style.opacity = (0.4 + 0.6 * smooth(0.1, 0.7, -sn)).toFixed(3));
+      mtn && (mtn.style.transform = `translate3d(-50%, ${((p * 7 * VH) / 100).toFixed(1)}px, 0)`);
+      scene && (scene.style.transform = `${narrow ? "translateX(-50%) " : ""}scale(${(1.06 - p * 0.06).toFixed(4)})`);
+      rib && !reduce && (rib.style.transform = `rotate(${(Math.sin(p * Math.PI * 8 + 0.8) * 4).toFixed(2)}deg) scaleX(${(1 + Math.sin(p * Math.PI * 8) * 0.05).toFixed(3)})`);
+      cue && (cue.style.opacity = Math.max(0, 1 - p * 8).toFixed(3));
+      const pos = p * N;
+      chapters.current.forEach((ch, i) => {
+        if (!ch) return;
+        const local = pos - i;
+        const a = (i === 0 ? 1 : smooth(0, 0.14, local)) * (i === N - 1 ? 1 : 1 - smooth(0.86, 1, local));
+        ch.style.opacity = a.toFixed(3);
+        ch.style.transform = `translate3d(0, ${((0.5 - Math.min(1, Math.max(0, local))) * 36).toFixed(1)}px, 0)`;
+        ch.style.visibility = a < 0.01 ? "hidden" : "visible";
+        ch.setAttribute("aria-hidden", a < 0.5 ? "true" : "false");
+      });
+      const active = Math.min(N - 1, Math.max(0, Math.floor(pos)));
+      if (active !== lastActive) {
+        lastActive = active;
+        dots.current.forEach((d, i) => d?.setAttribute("data-on", i === active ? "1" : i < active ? "past" : "0"));
+      }
+    };
+    const frame = () => {
+      raf = 0;
+      cur = cur < 0 || reduce ? target : cur + (target - cur) * 0.2;
+      if (Math.abs(target - cur) < 0.0004) cur = target;
+      if (cur !== shown) { apply(cur); shown = cur; }
+      if (cur !== target) raf = requestAnimationFrame(frame);
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
     const read = () => {
       const r = el.getBoundingClientRect();
       const span = r.height - window.innerHeight;
       target = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+      kick();
     };
-    const frame = (now: number) => {
-      cur += (target - cur) * (reduce ? 1 : 0.09);
-      const p = cur;
-      const idle = reduce ? 0 : Math.sin((now - t0) / 900) * 1.5; // tiny breath while idle
-      st.style.setProperty("--p", p.toFixed(4));
-      // day -> night: the dome starts with the Sun overhead and rolls counter-clockwise to the Moon
-      st.style.setProperty("--rot", `${(reduce ? 25 : 25 - p * 70).toFixed(2)}deg`);
-      st.style.setProperty("--gscale", (1.0 + p * 0.05).toFixed(3));
-      // Sun and Moon ride one arc across the sky: the Sun starts high and sets behind the
-      // mountains on the left; the Moon (opposite it on the arc) rises on the right and ends high.
-      const th = ((95 + 180 * p) * Math.PI) / 180;
-      const narrow = window.innerWidth < 860;
-      // phones: the arc sits in the right half so the Sun and Moon clear the title and tagline
-      // positions are % of the pinned scene, so they hold on every screen size
-      const cx = narrow ? 78 : 50, rx = narrow ? 18 : 40, ry = narrow ? 42 : 88, cy = narrow ? 63 : 108;
-      st.style.setProperty("--sx", `${(cx + rx * Math.cos(th)).toFixed(2)}%`);
-      st.style.setProperty("--sy", `${(cy - ry * Math.sin(th)).toFixed(2)}%`);
-      st.style.setProperty("--mx", `${(cx - rx * Math.cos(th)).toFixed(2)}%`);
-      st.style.setProperty("--my", `${(cy + ry * Math.sin(th)).toFixed(2)}%`);
-      const sunAlt = Math.sin(th), moonAlt = -sunAlt;
-      st.style.setProperty("--day", smooth(0.15, 0.85, sunAlt).toFixed(3));
-      st.style.setProperty("--moonlit", smooth(0.1, 0.7, moonAlt).toFixed(3));
-      st.style.setProperty("--mtn", `${(p * 7).toFixed(3)}vh`);
-      st.style.setProperty("--rib", reduce ? "0deg" : `${(Math.sin(p * Math.PI * 2 * 4 + 0.8) * 4 + idle).toFixed(2)}deg`);
-      st.style.setProperty("--ribs", reduce ? "1" : (1 + Math.sin(p * Math.PI * 2 * 4) * 0.05).toFixed(3));
-      st.style.setProperty("--scene", (1.06 - p * 0.06).toFixed(3));
-      const pos = p * N;
-      const active = Math.min(N - 1, Math.max(0, Math.floor(pos)));
-      chapters.current.forEach((c, i) => {
-        if (!c) return;
-        const local = pos - i;
-        const fadeIn = i === 0 ? 1 : smooth(0, 0.14, local);
-        const fadeOut = i === N - 1 ? 1 : 1 - smooth(0.86, 1, local);
-        const a = fadeIn * fadeOut;
-        c.style.opacity = a.toFixed(3);
-        c.style.transform = `translateY(${((0.5 - Math.min(1, Math.max(0, local))) * 36).toFixed(1)}px)`;
-        c.style.visibility = a < 0.01 ? "hidden" : "visible";
-        c.setAttribute("aria-hidden", a < 0.5 ? "true" : "false");
-      });
-      dots.current.forEach((d, i) => d?.setAttribute("data-on", i === active ? "1" : i < active ? "past" : "0"));
-      raf = requestAnimationFrame(frame);
-    };
-    read();
-    window.addEventListener("scroll", read, { passive: true });
-    window.addEventListener("resize", read);
     // keep the pinned scene exactly below the top bar (its height changes on phones)
     const bar = document.querySelector<HTMLElement>(".topbar");
-    const fit = () => el.style.setProperty("--bar", `${bar ? bar.offsetHeight : 0}px`);
+    const fit = () => {
+      el.style.setProperty("--bar", `${bar ? bar.offsetHeight : 0}px`);
+      W = st.clientWidth; H = st.clientHeight; VH = window.innerHeight;
+      shown = -1; read();
+    };
     fit();
-    const ro = bar ? new ResizeObserver(fit) : null;
-    if (bar && ro) ro.observe(bar);
-    raf = requestAnimationFrame(frame);
-    return () => { cancelAnimationFrame(raf); ro?.disconnect(); window.removeEventListener("scroll", read); window.removeEventListener("resize", read); };
+    const ro = new ResizeObserver(fit);
+    ro.observe(st);
+    if (bar) ro.observe(bar);
+    window.addEventListener("scroll", read, { passive: true });
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener("scroll", read); };
   }, [N]);
 
   const jump = (i: number) => {
@@ -108,10 +116,13 @@ export default function Landing() {
         <div className="lp-sky" aria-hidden="true"><img src={`${SRC}sky.webp`} alt="" draggable={false} /></div>
         <div className="lp-glow" aria-hidden="true" />
         <div className="lp-sun" aria-hidden="true"><i /></div>
-        <div className="lp-moon" aria-hidden="true"><img src={`${SRC}moon.webp`} alt="" draggable={false} /></div>
+        <div className="lp-moon" aria-hidden="true"><i className="lp-moon-glow" /><img src={`${SRC}moon.webp`} alt="" draggable={false} /></div>
         <div className="lp-shoot" aria-hidden="true"><i /><i /><i /></div>
         <div className="lp-dusk" aria-hidden="true" />
-        <div className="lp-mtn" aria-hidden="true"><img src={`${SRC}mountains.webp`} alt="" draggable={false} /></div>
+        <div className="lp-mtn" aria-hidden="true">
+          <img src={`${SRC}mountains.webp`} alt="" draggable={false} />
+          <img className="lp-mtn-day" src={`${SRC}mountains_day.webp`} alt="" draggable={false} />
+        </div>
         <div className="lp-scene" aria-hidden="true">
           <div className="lp-rib" style={{ transformOrigin: SCARF_PIVOT }}>
             <img src={`${SRC}scarf.webp`} alt="" draggable={false} style={{ transformOrigin: SCARF_PIVOT }} />
